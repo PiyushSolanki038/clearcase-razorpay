@@ -15,12 +15,16 @@ export interface ExclusionResult {
 // Maps an exclusion's plain-English condition string to the claim_type(s) that,
 // if present, satisfy it. Kept as an explicit lookup rather than fuzzy matching —
 // rulebook lookups must be deterministic.
-const CONDITION_TO_CLAIM_TYPES: Record<string, string[]> = {
-  cardholder_signed_receipt_present: ["proof_of_delivery"],
-  cardholder_return_accepted_by_merchant: ["authenticity_certificate"],
-  refund_already_issued_for_duplicate: ["duplicate_txn_proof"],
-  refund_already_processed_before_dispute: ["proof_of_delivery"],
-};
+//
+// Deliberately empty for now: every previous entry here reused an unrelated
+// required_evidence claim_type as a false proxy for a condition it doesn't actually
+// measure (e.g. "authenticity_certificate present" was standing in for "cardholder's
+// return was accepted by the merchant" — completely unrelated facts). That produced a
+// live bug: a MEDIUM case got silently misrouted to a false LOW/RECOMMEND_ACCEPT.
+// None of these conditions have a dedicated extractor claim_type yet, so until they do,
+// this map stays empty and checkExclusions() never fires — conservative by default,
+// same "skip, don't guess" rule the code below already follows for unknown conditions.
+const CONDITION_TO_CLAIM_TYPES: Record<string, string[]> = {};
 
 export function checkExclusions(
   rule: RulebookEntry,

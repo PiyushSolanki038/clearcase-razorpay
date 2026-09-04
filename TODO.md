@@ -4,33 +4,37 @@
 
 ---
 
-## Today (Day 2 — Mon 1 Sept)
+## Today (Day 3 — Tue 2 Sept)
 
-_(empty — full day complete, see Done today)_
+- [ ] `lib/ce3/assemble.ts` — CE 3.0 evidence assembler. **Blocked on a scope decision from Piyush** (see notes below). Everything else on Day 3's list is done.
 
 ---
 
 ## Done today
 
-- [x] `lib/llm.ts` — Gemini wrapper (`gemini-2.5-flash`), JSON-only responses, markdown-fence stripping, Zod validation, filesystem cache in `.llm-cache/` (gitignored), exponential backoff on 429 (max 3 retries)
-- [x] `lib/rules/loader.ts` — loads + Zod-validates all rulebook JSON at runtime, deterministic lookup by network+code
-- [x] `lib/rules/classifier.ts` — LLM picks best canonical code from rulebook candidates; exact raw-code matches skip the LLM call entirely (fast path, saves quota)
-- [x] `lib/rules/extractor.ts` — typed claim extraction from evidence doc text, null-over-guess enforced via prompt + per-claim `present` boolean
-- [x] `lib/rules/exclusions.ts` — deterministic exclusion/reclassification checks, no LLM
-- [x] `lib/rules/scorer.ts` — deterministic evidence scoring against `all_required`/`any_one_of`
-- [x] `POST /api/decide/[disputeId]/analyze` — wires classify -> extract -> exclude -> score, tested live end-to-end against real Gemini calls (not mocked)
+- [x] `lib/rules/router.ts` — deterministic confidence router (HIGH/MEDIUM/LOW), checks expired deadline first, then exclusions, then score
+- [x] `lib/rebuttal/generate.ts` — LLM-drafted rebuttal citing only extractor-found claims
+- [x] `lib/rules/pipeline.ts` — extracted the shared classify->extract->exclude->score logic out of the Day 2 `/analyze` route so `/execute` doesn't duplicate it
+- [x] `lib/audit/chain.ts` — hash-chained audit log (`appendAuditEntry`, `verifyChain`), verified programmatically that a real execute run produces a valid chain
+- [x] `lib/rebuttal/accept-explanation.ts` — differentiator #3: honest accept recommendation with dollar math (disputed amount vs representative arbitration fee)
+- [x] `POST /api/decide/[disputeId]/execute` — full pipeline, writes Decision + AuditEntry per step, tested live for all three confidence bands (HIGH/MEDIUM/LOW)
 
-**Bugs found and fixed during live testing (not just unit-level — caught by an actual API call):**
-- Scorer was double-counting the same claim_type when a rule's `all_required` was empty and `any_one_of` covered it — the fallback logic incorrectly reused `required_evidence` (an informational catalog) as a second gate. Fixed: `all_required`/`any_one_of` are now used as-is, `required_evidence` is never a fallback.
-- 5 of 6 rulebook exclusion rules had nonsensical `reclassify_to` targets (copied from CLAUDE.md's illustrative schema example without adapting the logic — e.g. "counterfeit-goods return accepted" incorrectly reclassified to "not received"). Fixed: all now point to a `closed_no_action` sentinel, which is semantically correct (refund/return already handled = case closed, not a different chargeback category).
+**Two more real bugs caught by live testing (not unit tests — actual API calls):**
+- `Decision.reasoningTrace` write failed Prisma's Json type at build time (interfaces aren't plain objects) — fixed with a JSON round-trip at the write boundary.
+- `checkExclusions`'s condition-to-claim-type map reused unrelated evidence (e.g. "authenticity_certificate present") as a false proxy for conditions it doesn't measure (e.g. "cardholder's return was accepted"). This silently misrouted a real MEDIUM case into a false LOW/RECOMMEND_ACCEPT during testing. Fixed: the map is now empty until real dedicated claim types exist for these conditions — exclusions never fire on a guess, matching the same "null over guess" principle used elsewhere.
+
+**Decision needed before `lib/ce3/assemble.ts` can be built** (flagged since Day 1): real Visa CE 3.0 (the 2-of-4 rule) applies specifically to dispute condition 10.4 (first-party misuse/fraud). Our canonical code set is 13.1/13.4/12.6 per ROADMAP's fallback — none of these are actually CE3.0-eligible under real Visa rules. Options to put to Piyush:
+  1. Add 10.4 as a 4th Visa code so the demo's CE3.0 pathway is grounded in a real rule.
+  2. Build the CE3.0 assembler as a generic "prior undisputed transaction" evidence-puller and apply it to 13.1 specifically, clearly labeled in the README as a simplification (real-world scope is 10.4 only).
+  3. Cut CE3.0 per the cut list — but CLAUDE.md marks it a "do not cut" differentiator, so this needs explicit sign-off.
 
 ---
 
-## Tomorrow (Day 3 — Tue 2 Sept)
+## Tomorrow (Day 4 — Wed 3 Sept)
 
-- [ ] `lib/rules/router.ts` — confidence router (HIGH/MEDIUM/LOW thresholds per code)
-- [ ] `lib/rebuttal/generate.ts` — LLM-drafted rebuttal, cited to source docs
-- [ ] `lib/ce3/assemble.ts` — CE 3.0 evidence assembly — **needs a scope decision first**: real CE3.0 applies to Visa dispute condition 10.4, not our fallback canonical set (13.1/13.4/12.6). Ask Piyush how to handle this before building it.
-- [ ] `lib/audit/chain.ts` — hash-chained audit log
-- [ ] Recommend-accept pathway with dollar math (arbitration fee vs disputed amount)
-- [ ] `POST /api/decide/[disputeId]/execute` — full pipeline, writes Decision + AuditEntry
+- [ ] Resolve CE3.0 scope decision above, then build `lib/ce3/assemble.ts`
+- [ ] Dashboard route `app/(dashboard)/disputes/page.tsx` — table view
+- [ ] Detail route `app/(dashboard)/disputes/[id]/page.tsx` — three-column layout
+- [ ] Evidence upload UI (or pasted-text per cut list)
+- [ ] Rebuttal preview + "Approve & Submit" button
+- [ ] Confidence Trace viewer modal
