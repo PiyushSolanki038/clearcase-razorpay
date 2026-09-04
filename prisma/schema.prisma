@@ -86,6 +86,7 @@ model Decision {
   rebuttalText     String?
   missingItems     Json?
   reasoningTrace   Json
+  submitted        Boolean         @default(false)
   createdAt        DateTime        @default(now())
 }
 
