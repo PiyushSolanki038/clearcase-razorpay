@@ -28,10 +28,16 @@ interface DecisionResult {
   route: { band: string; action: string; reasoning: string };
 }
 
-const BAND_STYLES: Record<string, string> = {
-  HIGH: "bg-green-100 text-green-800",
-  MEDIUM: "bg-amber-100 text-amber-800",
-  LOW: "bg-red-100 text-red-800",
+const BANNER_STYLES: Record<string, string> = {
+  HIGH: "bg-green-600 text-white",
+  MEDIUM: "bg-yellow-500 text-white",
+  LOW: "bg-red-600 text-white",
+};
+
+const BANNER_TEXT: Record<string, string> = {
+  HIGH: "✓ HIGH CONFIDENCE — Rebuttal ready to submit",
+  MEDIUM: "⚠ MEDIUM CONFIDENCE — One document needed",
+  LOW: "✕ LOW CONFIDENCE — Recommend accepting",
 };
 
 export function DecisionPanel({
@@ -168,12 +174,12 @@ export function DecisionPanel({
         <>
           <Separator />
           <div className="space-y-2">
+            <div
+              className={`w-full rounded-md px-3 py-2 text-sm font-semibold text-center ${BANNER_STYLES[result.decision.confidenceBand]}`}
+            >
+              {BANNER_TEXT[result.decision.confidenceBand]}
+            </div>
             <div className="flex items-center gap-2">
-              <span
-                className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${BAND_STYLES[result.decision.confidenceBand]}`}
-              >
-                {result.decision.confidenceBand}
-              </span>
               <Badge variant="outline">{result.decision.action}</Badge>
               {result.decision.submitted && (
                 <Badge className="bg-blue-100 text-blue-800">Submitted</Badge>

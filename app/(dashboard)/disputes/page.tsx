@@ -27,6 +27,13 @@ const BAND_STYLES: Record<string, string> = {
   LOW: "bg-red-100 text-red-800",
 };
 
+const ROW_BORDER_STYLES: Record<string, string> = {
+  HIGH: "border-l-4 border-l-green-500",
+  MEDIUM: "border-l-4 border-l-yellow-500",
+  LOW: "border-l-4 border-l-red-500",
+  NONE: "border-l-4 border-l-gray-300",
+};
+
 const DEMO_EXAMPLES = [
   { razorpayDisputeId: "disp_seed000", label: "HIGH — clean win", description: "Full delivery proof, auto-generates a rebuttal" },
   { razorpayDisputeId: "disp_seed021", label: "MEDIUM — missing one doc", description: "Has authenticity cert, missing product match" },
@@ -53,18 +60,10 @@ export default async function DisputesPage({
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">ClearCase</h1>
-          <p className="text-sm text-muted-foreground">
-            Post-transaction rebuttals for Razorpay disputes — tuned for RuPay, UPI, and
-            Indian merchant evidence.
-          </p>
-        </div>
-        <Link href="/metrics" className="text-sm text-muted-foreground hover:underline">
-          Metrics &rarr;
-        </Link>
-      </div>
+      <p className="text-sm text-muted-foreground mb-6">
+        Post-transaction rebuttals for Razorpay disputes — tuned for RuPay, UPI, and Indian
+        merchant evidence.
+      </p>
 
       {demoLinks.length > 0 && (
         <div className="mb-6 border rounded-md p-4 bg-blue-50 border-blue-200">
@@ -108,8 +107,9 @@ export default async function DisputesPage({
           {disputes.map((d) => {
             const deadline = formatDeadline(d.deadlineAt);
             const latestDecision = d.decisions[0];
+            const rowBorder = ROW_BORDER_STYLES[latestDecision?.confidenceBand ?? "NONE"];
             return (
-              <TableRow key={d.id} className="cursor-pointer">
+              <TableRow key={d.id} className={`cursor-pointer ${rowBorder}`}>
                 <TableCell>
                   <Link href={`/disputes/${d.id}`} className="hover:underline font-medium">
                     {d.razorpayDisputeId}
