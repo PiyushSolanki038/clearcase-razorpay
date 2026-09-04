@@ -1,0 +1,28 @@
+{
+  "network": "rupay",
+  "reason_code": "1062",
+  "name": "Goods and Services Not as Described / Defective",
+  "response_window_days": 30,
+  "required_evidence": [
+    {
+      "id": "authenticity_certificate",
+      "description": "Proof item matches listing/description, or brand authenticity documentation",
+      "acceptable_forms": ["brand_certificate", "gst_invoice_with_description", "product_photo"]
+    },
+    {
+      "id": "product_description_match",
+      "description": "Listing description or photos matching what was shipped",
+      "acceptable_forms": ["listing_screenshot", "product_photo"]
+    }
+  ],
+  "any_one_of": [],
+  "all_required": ["authenticity_certificate", "product_description_match"],
+  "exclusions": [
+    {
+      "condition": "cardholder_return_accepted_by_merchant",
+      "reclassify_to": "1061"
+    }
+  ],
+  "ce3_eligible": false,
+  "source_reference": "NPCI RuPay Chargeback Code Guide (RGCS), community-sourced summary — no official NPCI PDF found publicly; verify before production use."
+}

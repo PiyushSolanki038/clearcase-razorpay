@@ -1,0 +1,28 @@
+{
+  "network": "visa",
+  "reason_code": "13.4",
+  "name": "Counterfeit / Not as Described",
+  "response_window_days": 30,
+  "required_evidence": [
+    {
+      "id": "authenticity_certificate",
+      "description": "Brand or manufacturer authenticity certificate for the disputed item",
+      "acceptable_forms": ["brand_certificate", "invoice_with_serial_number"]
+    },
+    {
+      "id": "product_description_match",
+      "description": "Listing description or photos matching what was shipped",
+      "acceptable_forms": ["listing_screenshot", "product_photo"]
+    }
+  ],
+  "any_one_of": [],
+  "all_required": ["authenticity_certificate", "product_description_match"],
+  "exclusions": [
+    {
+      "condition": "cardholder_return_accepted_by_merchant",
+      "reclassify_to": "13.1"
+    }
+  ],
+  "ce3_eligible": false,
+  "source_reference": "Visa Core Rules ID#0004544, updated 2026-01"
+}

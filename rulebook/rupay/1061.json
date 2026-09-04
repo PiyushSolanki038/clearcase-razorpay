@@ -1,0 +1,25 @@
+{
+  "network": "rupay",
+  "reason_code": "1061",
+  "name": "Credit Not Processed for Cancelled or Returned Goods/Services",
+  "response_window_days": 30,
+  "required_evidence": [
+    {
+      "id": "proof_of_delivery",
+      "description": "Proof goods/services were delivered as agreed, or valid refund already issued",
+      "acceptable_forms": ["courier_pod", "refund_confirmation", "whatsapp_confirmation"]
+    }
+  ],
+  "any_one_of": [
+    { "id": "proof_of_delivery", "description": "Delivery proof or refund confirmation" }
+  ],
+  "all_required": [],
+  "exclusions": [
+    {
+      "condition": "refund_already_processed_before_dispute",
+      "reclassify_to": "closed_no_action"
+    }
+  ],
+  "ce3_eligible": false,
+  "source_reference": "NPCI RuPay Chargeback Code Guide (RGCS), community-sourced summary — no official NPCI PDF found publicly; verify before production use."
+}

@@ -1,0 +1,25 @@
+{
+  "network": "visa",
+  "reason_code": "12.6",
+  "name": "Duplicate Processing",
+  "response_window_days": 30,
+  "required_evidence": [
+    {
+      "id": "duplicate_txn_proof",
+      "description": "Evidence the two transactions are distinct (different items/dates) or that only one was ever settled",
+      "acceptable_forms": ["transaction_ledger_extract", "order_ids_comparison"]
+    }
+  ],
+  "any_one_of": [
+    { "id": "duplicate_txn_proof", "description": "Any proof the charge was not duplicated" }
+  ],
+  "all_required": [],
+  "exclusions": [
+    {
+      "condition": "refund_already_issued_for_duplicate",
+      "reclassify_to": "13.1"
+    }
+  ],
+  "ce3_eligible": false,
+  "source_reference": "Visa Core Rules ID#0004544, updated 2026-01. Note: CE3.0 (2-of-4 rule) applies to first-party misuse claims, not billing/processing errors — not applicable to 12.6."
+}

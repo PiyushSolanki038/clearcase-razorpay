@@ -1,0 +1,25 @@
+{
+  "network": "rupay",
+  "reason_code": "1002",
+  "name": "Cardholder Disputes Billed Amount",
+  "response_window_days": 30,
+  "required_evidence": [
+    {
+      "id": "duplicate_txn_proof",
+      "description": "Evidence the billed amount matches the agreed order value, or that only one transaction settled",
+      "acceptable_forms": ["transaction_ledger_extract", "gst_invoice_with_description"]
+    }
+  ],
+  "any_one_of": [
+    { "id": "duplicate_txn_proof", "description": "Any proof the billed amount was correct / not duplicated" }
+  ],
+  "all_required": [],
+  "exclusions": [
+    {
+      "condition": "refund_already_issued_for_duplicate",
+      "reclassify_to": "1061"
+    }
+  ],
+  "ce3_eligible": false,
+  "source_reference": "NPCI RuPay Chargeback Code Guide (RGCS), community-sourced summary — no official NPCI PDF found publicly; verify before production use."
+}
