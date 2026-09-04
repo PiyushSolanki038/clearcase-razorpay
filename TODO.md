@@ -6,35 +6,28 @@
 
 ## Today (Day 3 — Tue 2 Sept)
 
-- [ ] `lib/ce3/assemble.ts` — CE 3.0 evidence assembler. **Blocked on a scope decision from Piyush** (see notes below). Everything else on Day 3's list is done.
+_(empty — full day complete including CE3.0, see Done today)_
 
 ---
 
 ## Done today
 
-- [x] `lib/rules/router.ts` — deterministic confidence router (HIGH/MEDIUM/LOW), checks expired deadline first, then exclusions, then score
-- [x] `lib/rebuttal/generate.ts` — LLM-drafted rebuttal citing only extractor-found claims
-- [x] `lib/rules/pipeline.ts` — extracted the shared classify->extract->exclude->score logic out of the Day 2 `/analyze` route so `/execute` doesn't duplicate it
-- [x] `lib/audit/chain.ts` — hash-chained audit log (`appendAuditEntry`, `verifyChain`), verified programmatically that a real execute run produces a valid chain
-- [x] `lib/rebuttal/accept-explanation.ts` — differentiator #3: honest accept recommendation with dollar math (disputed amount vs representative arbitration fee)
-- [x] `POST /api/decide/[disputeId]/execute` — full pipeline, writes Decision + AuditEntry per step, tested live for all three confidence bands (HIGH/MEDIUM/LOW)
+- [x] `lib/rules/router.ts`, `lib/rebuttal/generate.ts`, `lib/audit/chain.ts`, `lib/rebuttal/accept-explanation.ts`, `POST /api/decide/[disputeId]/execute` (see earlier commit for details)
+- [x] **CE3.0 scope resolved with Piyush**: added Visa 10.4 as a 4th canonical code (`rulebook/visa/10.4.json`), grounded in the real 2-of-4 rule rather than misapplying it to 13.1/13.4/12.6
+- [x] `seed/priorTransactions.ts` — synthetic prior-transaction history for 3 cardholders (one clean CE3.0 win, one out-of-window, one insufficient-matching-elements)
+- [x] `lib/ce3/assemble.ts` — deterministic 2-of-4 rule implementation (2+ qualifying prior transactions, 2+ matching element types, 120-365 day window)
+- [x] Wired CE3.0 into `lib/rules/pipeline.ts` — when a rule is `ce3_eligible` and a `ce3Transaction` is provided, an eligible match injects a synthetic `ce3_prior_transactions` claim that flows through scoring/routing/rebuttal like any other evidence
+- [x] Added 3 dedicated CE3.0 demo disputes on top of the 50 (total seed count now 53) — flagging this count change explicitly since ROADMAP specified 50
+- [x] Live-tested all 3 CE3.0 scenarios end-to-end (HIGH win, LOW out-of-window, LOW insufficient-elements) — all routed correctly
 
-**Two more real bugs caught by live testing (not unit tests — actual API calls):**
-- `Decision.reasoningTrace` write failed Prisma's Json type at build time (interfaces aren't plain objects) — fixed with a JSON round-trip at the write boundary.
-- `checkExclusions`'s condition-to-claim-type map reused unrelated evidence (e.g. "authenticity_certificate present") as a false proxy for conditions it doesn't measure (e.g. "cardholder's return was accepted"). This silently misrouted a real MEDIUM case into a false LOW/RECOMMEND_ACCEPT during testing. Fixed: the map is now empty until real dedicated claim types exist for these conditions — exclusions never fire on a guess, matching the same "null over guess" principle used elsewhere.
-
-**Decision needed before `lib/ce3/assemble.ts` can be built** (flagged since Day 1): real Visa CE 3.0 (the 2-of-4 rule) applies specifically to dispute condition 10.4 (first-party misuse/fraud). Our canonical code set is 13.1/13.4/12.6 per ROADMAP's fallback — none of these are actually CE3.0-eligible under real Visa rules. Options to put to Piyush:
-  1. Add 10.4 as a 4th Visa code so the demo's CE3.0 pathway is grounded in a real rule.
-  2. Build the CE3.0 assembler as a generic "prior undisputed transaction" evidence-puller and apply it to 13.1 specifically, clearly labeled in the README as a simplification (real-world scope is 10.4 only).
-  3. Cut CE3.0 per the cut list — but CLAUDE.md marks it a "do not cut" differentiator, so this needs explicit sign-off.
+**A third live-testing bug, worth calling out because of what it demonstrates**: the rebuttal generator only read `source_span` (a document quote) to build its evidence prompt. The CE3.0 claim has no source document — its facts live in `claim_data` — so the LLM saw `"null"` for that claim and hallucinated a directly contradictory rebuttal ("no prior transactions found, we cannot contest this") despite the system's own score being a perfect 1.0. This is exactly the failure mode CLAUDE.md's "no hallucinated evidence" rule warns about, and it would have shipped invisibly without testing against real Gemini calls. Fixed: the generator now falls back to `claim_data` when `source_span` is absent.
 
 ---
 
 ## Tomorrow (Day 4 — Wed 3 Sept)
 
-- [ ] Resolve CE3.0 scope decision above, then build `lib/ce3/assemble.ts`
-- [ ] Dashboard route `app/(dashboard)/disputes/page.tsx` — table view
-- [ ] Detail route `app/(dashboard)/disputes/[id]/page.tsx` — three-column layout
-- [ ] Evidence upload UI (or pasted-text per cut list)
+- [ ] Dashboard route `app/(dashboard)/disputes/page.tsx` — table view (columns: ID, amount, reason, deadline countdown, status, confidence band)
+- [ ] Detail route `app/(dashboard)/disputes/[id]/page.tsx` — three-column layout (rulebook criteria / evidence / decision panel)
+- [ ] Evidence upload UI — or pasted-text per cut list if time is tight
 - [ ] Rebuttal preview + "Approve & Submit" button
-- [ ] Confidence Trace viewer modal
+- [ ] Confidence Trace viewer modal (extracted claims -> matched rules -> exclusions -> score -> band, visual step-through)

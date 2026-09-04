@@ -4,6 +4,15 @@
 
 export type GroundTruthLabel = "should_win" | "should_ask_for_doc" | "should_lose";
 
+export interface CE3TransactionRef {
+  cardholderId: string;
+  transactionDate: string;
+  accountId: string;
+  deviceId: string;
+  shippingAddress: string;
+  ipAddress: string;
+}
+
 export interface SeedDispute {
   razorpayDisputeId: string;
   paymentId: string;
@@ -17,6 +26,9 @@ export interface SeedDispute {
   groundTruthLabel: GroundTruthLabel;
   groundTruthMissingDoc?: string;
   groundTruthNotes: string;
+  // Only set for the 3 dedicated CE3.0 demo disputes (10.4) — not a DB column,
+  // used directly by the analyze/execute endpoints' ce3Transaction input.
+  ce3Transaction?: CE3TransactionRef;
 }
 
 interface CodeGroup {
@@ -126,4 +138,76 @@ function generate(): SeedDispute[] {
   return disputes;
 }
 
-export const seedDisputes: SeedDispute[] = generate();
+// 3 dedicated CE3.0 (Visa 10.4) demo disputes, appended on top of the 50 — see
+// seed/priorTransactions.ts for the matching prior-transaction history. Added on
+// Day 3 once 10.4 was confirmed as a 4th canonical code (see TODO.md).
+const CE3_DEMO_DISPUTES: SeedDispute[] = [
+  {
+    razorpayDisputeId: "disp_ce3_high",
+    paymentId: "pay_ce3_high",
+    amount: 499_900,
+    currency: "INR",
+    network: "visa",
+    reasonCodeRaw: "10.4",
+    reasonCodeCanonical: "other_fraud_card_absent",
+    createdAt: "2026-10-15T00:00:00.000Z",
+    deadlineAt: "2026-11-14T00:00:00.000Z",
+    groundTruthLabel: "should_win",
+    groundTruthNotes:
+      "CE3.0-eligible: 3 prior undisputed transactions (cardholder_A) in the 120-365 day window match on account_id, device_id, shipping_address, and ip_address.",
+    ce3Transaction: {
+      cardholderId: "cardholder_A",
+      transactionDate: "2026-10-15T00:00:00.000Z",
+      accountId: "acct_rohan_88213",
+      deviceId: "device_9F2A",
+      shippingAddress: "42 MG Road, Bengaluru 560001",
+      ipAddress: "103.21.58.10",
+    },
+  },
+  {
+    razorpayDisputeId: "disp_ce3_low_window",
+    paymentId: "pay_ce3_low_window",
+    amount: 299_900,
+    currency: "INR",
+    network: "visa",
+    reasonCodeRaw: "10.4",
+    reasonCodeCanonical: "other_fraud_card_absent",
+    createdAt: "2026-10-15T00:00:00.000Z",
+    deadlineAt: "2026-11-14T00:00:00.000Z",
+    groundTruthLabel: "should_lose",
+    groundTruthNotes:
+      "Not CE3.0-eligible: cardholder_B's only prior transactions fall outside the 120-365 day window (one too old, one too recent).",
+    ce3Transaction: {
+      cardholderId: "cardholder_B",
+      transactionDate: "2026-10-15T00:00:00.000Z",
+      accountId: "acct_priya_55210",
+      deviceId: "device_1122",
+      shippingAddress: "9 Park Street, Kolkata 700016",
+      ipAddress: "45.112.90.5",
+    },
+  },
+  {
+    razorpayDisputeId: "disp_ce3_low_elements",
+    paymentId: "pay_ce3_low_elements",
+    amount: 349_900,
+    currency: "INR",
+    network: "visa",
+    reasonCodeRaw: "10.4",
+    reasonCodeCanonical: "other_fraud_card_absent",
+    createdAt: "2026-10-15T00:00:00.000Z",
+    deadlineAt: "2026-11-14T00:00:00.000Z",
+    groundTruthLabel: "should_lose",
+    groundTruthNotes:
+      "Not CE3.0-eligible: cardholder_C has 2 qualifying prior transactions in-window, but they only share 1 matching data element (device_id) — the 2-of-4 rule needs 2 element types.",
+    ce3Transaction: {
+      cardholderId: "cardholder_C",
+      transactionDate: "2026-10-15T00:00:00.000Z",
+      accountId: "acct_current_different",
+      deviceId: "device_7788",
+      shippingAddress: "current checkout address, not matching any prior",
+      ipAddress: "9.9.9.9",
+    },
+  },
+];
+
+export const seedDisputes: SeedDispute[] = [...generate(), ...CE3_DEMO_DISPUTES];

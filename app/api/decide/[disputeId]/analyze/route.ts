@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { runPipeline } from "@/lib/rules/pipeline";
+import { ce3TransactionSchema } from "@/lib/schemas/ce3";
 
 const requestSchema = z.object({
   evidenceDocs: z.array(
@@ -13,6 +14,7 @@ const requestSchema = z.object({
       rawText: z.string().min(1),
     })
   ),
+  ce3Transaction: ce3TransactionSchema.optional(),
 });
 
 export async function POST(
@@ -41,6 +43,7 @@ export async function POST(
       network: dispute.network,
       reasonCodeRaw: dispute.reasonCodeRaw,
       evidenceDocs: parsed.data.evidenceDocs,
+      ce3Transaction: parsed.data.ce3Transaction,
     });
   } catch (err) {
     return NextResponse.json(
@@ -60,5 +63,6 @@ export async function POST(
     claims: pipeline.claims,
     exclusion: pipeline.exclusion,
     score: pipeline.score,
+    ce3: pipeline.ce3,
   });
 }

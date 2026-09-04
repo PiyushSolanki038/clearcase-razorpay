@@ -1,0 +1,20 @@
+{
+  "network": "visa",
+  "reason_code": "10.4",
+  "name": "Other Fraud - Card-Absent Environment",
+  "response_window_days": 30,
+  "required_evidence": [
+    {
+      "id": "ce3_prior_transactions",
+      "description": "Compelling Evidence 3.0 package: 2+ prior undisputed transactions (120-365 days before the disputed transaction) sharing 2+ of the same data elements (account/login ID, device ID/fingerprint, shipping address, IP address)",
+      "acceptable_forms": ["ce3_evidence_package"]
+    }
+  ],
+  "any_one_of": [
+    { "id": "ce3_prior_transactions", "description": "CE3.0 2-of-4 evidence package" }
+  ],
+  "all_required": [],
+  "exclusions": [],
+  "ce3_eligible": true,
+  "source_reference": "Visa Compelling Evidence 3.0 Merchant Readiness Guide, March 2023 (https://usa.visa.com/content/dam/VCOM/regional/na/us/support-legal/documents/compelling-evidence-3.0-merchant-readiness-mar2023.pdf). 2-of-4 rule: dispute condition 10.4 (first-party misuse), 2+ matching data elements from 2+ prior undisputed transactions 120-365 days before the disputed transaction."
+}

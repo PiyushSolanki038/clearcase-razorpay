@@ -22,10 +22,21 @@ export interface GenerateRebuttalInput {
   currency: string;
 }
 
+function describeClaim(c: ExtractedClaim): string {
+  // Document-sourced claims have a source_span quote; the CE3.0-injected claim
+  // (see lib/rules/pipeline.ts) has no source_span but carries its facts in
+  // claim_data — without this fallback the LLM sees "null" and hallucinates
+  // instead of citing the real prior-transaction match.
+  if (c.source_span) {
+    return `- ${c.claim_type}: "${c.source_span}" (confidence ${c.confidence})`;
+  }
+  return `- ${c.claim_type}: ${JSON.stringify(c.claim_data)} (confidence ${c.confidence})`;
+}
+
 export async function generateRebuttal(input: GenerateRebuttalInput): Promise<Rebuttal> {
   const claimsText = input.presentClaims
     .filter((c) => c.present)
-    .map((c) => `- ${c.claim_type}: "${c.source_span}" (confidence ${c.confidence})`)
+    .map(describeClaim)
     .join("\n");
 
   const prompt = `You are drafting a chargeback rebuttal letter for a merchant disputing a chargeback with their acquiring bank (Razorpay). Only cite facts from the evidence claims below — never state a fact that isn't backed by one of these claims.
@@ -33,7 +44,7 @@ export async function generateRebuttal(input: GenerateRebuttalInput): Promise<Re
 Dispute: ${input.rule.network} reason code ${input.rule.reason_code} (${input.rule.name})
 Amount: ${(input.disputeAmount / 100).toFixed(2)} ${input.currency}
 
-Evidence claims found (each with the exact source quote):
+Evidence claims found (either an exact source document quote, or structured data for evidence not sourced from a document, e.g. prior-transaction match data):
 ${claimsText}
 
 Write a professional rebuttal. Respond with JSON only, matching this exact shape:

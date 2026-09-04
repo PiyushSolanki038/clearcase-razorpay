@@ -6,12 +6,14 @@ import { extractClaims, type ExtractedClaim } from "@/lib/rules/extractor";
 import { checkExclusions, type ExclusionResult } from "@/lib/rules/exclusions";
 import { scoreEvidence, type ScoreResult } from "@/lib/rules/scorer";
 import { findRule, type RulebookEntry } from "@/lib/rules/loader";
+import { assembleCE3Evidence, type CurrentTransactionAttrs, type CE3Result } from "@/lib/ce3/assemble";
 import type { Classification } from "@/lib/rules/classifier";
 
 export interface PipelineInput {
   network: "visa" | "rupay" | "mastercard";
   reasonCodeRaw: string;
   evidenceDocs: { docType: string; rawText: string }[];
+  ce3Transaction?: CurrentTransactionAttrs;
 }
 
 export interface PipelineResult {
@@ -20,6 +22,7 @@ export interface PipelineResult {
   claims: ExtractedClaim[];
   exclusion: ExclusionResult;
   score: ScoreResult;
+  ce3?: CE3Result;
 }
 
 export async function runPipeline(input: PipelineInput): Promise<PipelineResult> {
@@ -52,8 +55,25 @@ export async function runPipeline(input: PipelineInput): Promise<PipelineResult>
     }, new Map<string, ExtractedClaim>())
   ).map(([, claim]) => claim);
 
+  let ce3: CE3Result | undefined;
+  if (rule.ce3_eligible && input.ce3Transaction) {
+    ce3 = assembleCE3Evidence(input.ce3Transaction);
+    if (ce3.eligible) {
+      mergedClaims.push({
+        claim_type: "ce3_prior_transactions",
+        present: true,
+        claim_data: {
+          qualifyingTransactions: ce3.qualifyingTransactions,
+          matchedElementTypes: ce3.matchedElementTypes,
+        },
+        confidence: 1,
+        source_span: null,
+      });
+    }
+  }
+
   const exclusion = checkExclusions(rule, mergedClaims);
   const score = scoreEvidence(rule, mergedClaims);
 
-  return { classification, rule, claims: mergedClaims, exclusion, score };
+  return { classification, rule, claims: mergedClaims, exclusion, score, ce3 };
 }
