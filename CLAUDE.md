@@ -39,7 +39,7 @@ Every commit, every doc line, every UI copy string must support this framing.
 - **Framework**: Next.js 16 (App Router) + TypeScript — updated from originally-planned v14 on Day 0 since `create-next-app@latest` ships 16; using latest to avoid fighting current shadcn/Tailwind v4 tooling.
 - **Styling**: Tailwind CSS + shadcn/ui components
 - **Database**: PostgreSQL via Supabase (free tier)
-- **ORM**: Prisma
+- **ORM**: Prisma — pinned to `6.19.3` (not latest). Prisma 7/8 moved connection URLs out of `schema.prisma` into `prisma.config.ts`, which would break the documented schema pattern below. Do not upgrade mid-build.
 - **LLM**: Google Gemini API (free tier) — use `gemini-2.5-flash` for extraction, classification, and rebuttal generation. SDK: `@google/genai`. Chosen because it has a genuine free tier with limits that fit this project (~1500 req/day). All LLM logic lives in `lib/llm.ts`.
 - **File storage**: Supabase Storage
 - **Auth**: Skip for MVP (single hardcoded user). Add Clerk only if time permits on Day 5.
