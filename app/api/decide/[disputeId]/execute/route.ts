@@ -57,13 +57,16 @@ export async function POST(
     );
   }
 
-  await appendAuditEntry(dispute.id, "classify", pipeline.classification);
+  // Only the first call needs to look up the last stored hash — every subsequent call
+  // in this request chains off the previous call's return value, cutting the audit log
+  // from ~16-18 sequential DB round trips down to ~8 (see lib/audit/chain.ts).
+  let lastHash = (await appendAuditEntry(dispute.id, "classify", pipeline.classification)).currentHash;
   if (pipeline.ce3) {
-    await appendAuditEntry(dispute.id, "ce3_assemble", pipeline.ce3);
+    lastHash = (await appendAuditEntry(dispute.id, "ce3_assemble", pipeline.ce3, lastHash)).currentHash;
   }
-  await appendAuditEntry(dispute.id, "extract", { claims: pipeline.claims });
-  await appendAuditEntry(dispute.id, "exclude", pipeline.exclusion);
-  await appendAuditEntry(dispute.id, "score", pipeline.score);
+  lastHash = (await appendAuditEntry(dispute.id, "extract", { claims: pipeline.claims }, lastHash)).currentHash;
+  lastHash = (await appendAuditEntry(dispute.id, "exclude", pipeline.exclusion, lastHash)).currentHash;
+  lastHash = (await appendAuditEntry(dispute.id, "score", pipeline.score, lastHash)).currentHash;
 
   const route = routeDecision({
     score: pipeline.score,
@@ -71,7 +74,7 @@ export async function POST(
     deadlineAt: dispute.deadlineAt,
   });
 
-  await appendAuditEntry(dispute.id, "route", route);
+  lastHash = (await appendAuditEntry(dispute.id, "route", route, lastHash)).currentHash;
 
   let rebuttalText: string | null = null;
   let missingItems: string[] | null = null;
@@ -84,10 +87,10 @@ export async function POST(
       currency: dispute.currency,
     });
     rebuttalText = rebuttal.body;
-    await appendAuditEntry(dispute.id, "generate_rebuttal", rebuttal);
+    lastHash = (await appendAuditEntry(dispute.id, "generate_rebuttal", rebuttal, lastHash)).currentHash;
   } else if (route.action === "REQUEST_DOC") {
     missingItems = pipeline.score.missing;
-    await appendAuditEntry(dispute.id, "request_doc", { missingItems });
+    lastHash = (await appendAuditEntry(dispute.id, "request_doc", { missingItems }, lastHash)).currentHash;
   } else {
     const accept = await generateAcceptExplanation({
       reasonForLowConfidence: route.reasoning,
@@ -96,7 +99,7 @@ export async function POST(
       currency: dispute.currency,
     });
     rebuttalText = accept.explanation;
-    await appendAuditEntry(dispute.id, "recommend_accept", accept);
+    lastHash = (await appendAuditEntry(dispute.id, "recommend_accept", accept, lastHash)).currentHash;
   }
 
   const decision = await prisma.decision.create({
@@ -118,7 +121,7 @@ export async function POST(
     },
   });
 
-  await appendAuditEntry(dispute.id, "decision_created", { decisionId: decision.id });
+  await appendAuditEntry(dispute.id, "decision_created", { decisionId: decision.id }, lastHash);
 
   return NextResponse.json({ decision, route });
 }

@@ -19,14 +19,22 @@ function computeHash(prevHash: string, payload: unknown): string {
 export async function appendAuditEntry(
   disputeId: string,
   step: string,
-  payload: unknown
+  payload: unknown,
+  // Pass the hash returned by the previous appendAuditEntry call in the same request to
+  // skip the extra read — callers writing several entries in sequence (e.g. /execute,
+  // which writes 7-9 in a row) would otherwise pay a findFirst + create round trip per
+  // step. Omit this to fall back to looking the last entry up (safe for one-off callers).
+  knownPrevHash?: string
 ): Promise<{ id: string; currentHash: string }> {
-  const lastEntry = await prisma.auditEntry.findFirst({
-    where: { disputeId },
-    orderBy: { createdAt: "desc" },
-  });
+  let prevHash = knownPrevHash;
+  if (prevHash === undefined) {
+    const lastEntry = await prisma.auditEntry.findFirst({
+      where: { disputeId },
+      orderBy: { createdAt: "desc" },
+    });
+    prevHash = lastEntry?.currentHash ?? GENESIS_HASH;
+  }
 
-  const prevHash = lastEntry?.currentHash ?? GENESIS_HASH;
   const currentHash = computeHash(prevHash, payload);
 
   const entry = await prisma.auditEntry.create({
