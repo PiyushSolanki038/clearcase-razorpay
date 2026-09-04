@@ -21,10 +21,32 @@ export default async function DisputeDetailPage({
     where: { id },
     include: {
       auditEntries: { orderBy: { createdAt: "asc" } },
+      decisions: { orderBy: { createdAt: "desc" }, take: 1 },
     },
   });
 
   if (!dispute) notFound();
+
+  const latestDecision = dispute.decisions[0];
+  const initialResult = latestDecision
+    ? {
+        decision: {
+          id: latestDecision.id,
+          confidenceBand: latestDecision.confidenceBand,
+          action: latestDecision.action,
+          rebuttalText: latestDecision.rebuttalText,
+          missingItems: latestDecision.missingItems as string[] | null,
+          submitted: latestDecision.submitted,
+        },
+        route: {
+          band: latestDecision.confidenceBand,
+          action: latestDecision.action,
+          reasoning:
+            (latestDecision.reasoningTrace as { route?: { reasoning?: string } } | null)?.route
+              ?.reasoning ?? "",
+        },
+      }
+    : null;
 
   const rule = findRule(
     dispute.network,
@@ -150,6 +172,7 @@ export default async function DisputeDetailPage({
               disputeId={dispute.id}
               ce3Eligible={rule?.ce3_eligible ?? false}
               initialAuditEntries={auditEntries}
+              initialResult={initialResult}
             />
           </CardContent>
         </Card>

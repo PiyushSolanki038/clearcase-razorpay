@@ -38,10 +38,12 @@ export function DecisionPanel({
   disputeId,
   ce3Eligible,
   initialAuditEntries,
+  initialResult,
 }: {
   disputeId: string;
   ce3Eligible: boolean;
   initialAuditEntries: AuditEntryView[];
+  initialResult: DecisionResult | null;
 }) {
   const router = useRouter();
   const [docs, setDocs] = useState<EvidenceDocInput[]>([{ docType: "", rawText: "" }]);
@@ -55,7 +57,7 @@ export function DecisionPanel({
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<DecisionResult | null>(null);
+  const [result, setResult] = useState<DecisionResult | null>(initialResult);
   const [auditEntries, setAuditEntries] = useState<AuditEntryView[]>(initialAuditEntries);
   const [submitting, setSubmitting] = useState(false);
 
