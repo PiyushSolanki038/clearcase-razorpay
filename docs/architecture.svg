@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" font-family="Arial, sans-serif">
+  <style>
+    .box { fill: #ffffff; stroke: #2563eb; stroke-width: 2; rx: 8; }
+    .box-llm { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; stroke-dasharray: 5,3; rx: 8; }
+    .box-det { fill: #f0fdf4; stroke: #16a34a; stroke-width: 2; rx: 8; }
+    .box-store { fill: #fefce8; stroke: #ca8a04; stroke-width: 2; rx: 8; }
+    .label { font-size: 13px; fill: #111827; text-anchor: middle; }
+    .sublabel { font-size: 10px; fill: #6b7280; text-anchor: middle; }
+    .section { font-size: 12px; fill: #6b7280; font-weight: bold; }
+    .arrow { stroke: #4b5563; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+  </style>
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#4b5563"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="720" fill="#ffffff"/>
+  <text x="20" y="30" font-size="18" font-weight="bold" fill="#111827">ClearCase — Architecture</text>
+  <text x="20" y="50" font-size="12" fill="#6b7280">Solid green = deterministic (rule engine) · Dashed blue = LLM call (Gemini) · Yellow = persistence</text>
+
+  <!-- Input -->
+  <rect x="20" y="90" width="160" height="60" class="box"/>
+  <text x="100" y="115" class="label">Razorpay Webhook</text>
+  <text x="100" y="132" class="sublabel">dispute.created</text>
+
+  <!-- Ingest API -->
+  <rect x="230" y="90" width="160" height="60" class="box"/>
+  <text x="310" y="115" class="label">POST /disputes/ingest</text>
+  <text x="310" y="132" class="sublabel">Zod validation</text>
+
+  <!-- Dispute DB -->
+  <rect x="440" y="90" width="140" height="60" class="box-store"/>
+  <text x="510" y="115" class="label">Dispute</text>
+  <text x="510" y="132" class="sublabel">Postgres (Supabase)</text>
+
+  <path class="arrow" d="M180,120 L230,120"/>
+  <path class="arrow" d="M390,120 L440,120"/>
+
+  <!-- Pipeline row -->
+  <text x="20" y="200" class="section">DECISION PIPELINE — /api/decide/[id]/execute</text>
+
+  <rect x="20" y="220" width="150" height="60" class="box-llm"/>
+  <text x="95" y="245" class="label">1. Classify</text>
+  <text x="95" y="262" class="sublabel">reason code -&gt; canonical</text>
+
+  <rect x="200" y="220" width="150" height="60" class="box-det"/>
+  <text x="275" y="245" class="label">2. CE3.0 Assemble</text>
+  <text x="275" y="262" class="sublabel">2-of-4 rule (10.4 only)</text>
+
+  <rect x="380" y="220" width="150" height="60" class="box-llm"/>
+  <text x="455" y="245" class="label">3. Extract Claims</text>
+  <text x="455" y="262" class="sublabel">null over guess</text>
+
+  <rect x="560" y="220" width="150" height="60" class="box-det"/>
+  <text x="635" y="245" class="label">4. Check Exclusions</text>
+  <text x="635" y="262" class="sublabel">deterministic reclassify</text>
+
+  <rect x="740" y="220" width="150" height="60" class="box-det"/>
+  <text x="815" y="245" class="label">5. Score Evidence</text>
+  <text x="815" y="262" class="sublabel">vs required_evidence</text>
+
+  <rect x="920" y="220" width="150" height="60" class="box-det"/>
+  <text x="995" y="245" class="label">6. Route</text>
+  <text x="995" y="262" class="sublabel">HIGH / MEDIUM / LOW</text>
+
+  <path class="arrow" d="M170,250 L200,250"/>
+  <path class="arrow" d="M350,250 L380,250"/>
+  <path class="arrow" d="M530,250 L560,250"/>
+  <path class="arrow" d="M710,250 L740,250"/>
+  <path class="arrow" d="M890,250 L920,250"/>
+
+  <!-- Rulebook input -->
+  <rect x="200" y="320" width="150" height="50" class="box-store"/>
+  <text x="275" y="342" class="label">rulebook/*.json</text>
+  <text x="275" y="358" class="sublabel">versioned in repo</text>
+  <path class="arrow" d="M275,320 L275,280"/>
+  <path class="arrow" d="M275,320 L455,280" transform="translate(0,0)"/>
+  <path class="arrow" d="M275,320 L635,280"/>
+  <path class="arrow" d="M275,320 L815,280"/>
+
+  <!-- Outputs from route -->
+  <text x="920" y="310" class="section">7. OUTPUT (by band)</text>
+
+  <rect x="850" y="330" width="110" height="55" class="box-llm"/>
+  <text x="905" y="352" class="label" font-size="11">HIGH -&gt;</text>
+  <text x="905" y="368" class="sublabel">Auto-rebuttal</text>
+
+  <rect x="980" y="330" width="110" height="55" class="box-det"/>
+  <text x="1035" y="352" class="label" font-size="11">MEDIUM -&gt;</text>
+  <text x="1035" y="368" class="sublabel">Request 1 doc</text>
+
+  <rect x="1110" y="330" width="80" height="55" class="box-llm"/>
+  <text x="1150" y="347" class="label" font-size="10">LOW -&gt;</text>
+  <text x="1150" y="362" class="sublabel" font-size="9">Honest accept</text>
+  <text x="1150" y="374" class="sublabel" font-size="9">+ $ math</text>
+
+  <path class="arrow" d="M995,280 L905,330"/>
+  <path class="arrow" d="M995,280 L1035,330"/>
+  <path class="arrow" d="M995,280 L1150,330"/>
+
+  <!-- Audit chain -->
+  <text x="20" y="440" class="section">AUDIT SPINE — every step above writes here</text>
+  <rect x="20" y="460" width="1170" height="70" class="box-store"/>
+  <text x="605" y="488" class="label">AuditEntry (hash-chained)</text>
+  <text x="605" y="508" class="sublabel">prev_hash + sha256(payload) = current_hash — reproducible from source docs + rulebook version, independently verifiable</text>
+
+  <path class="arrow" d="M95,280 L95,460"/>
+  <path class="arrow" d="M455,280 L455,460"/>
+  <path class="arrow" d="M635,280 L635,460"/>
+  <path class="arrow" d="M815,280 L815,460"/>
+  <path class="arrow" d="M995,390 L995,460"/>
+
+  <!-- Decision table -->
+  <rect x="20" y="570" width="300" height="60" class="box-store"/>
+  <text x="170" y="595" class="label">Decision</text>
+  <text x="170" y="612" class="sublabel">band, action, rebuttal, reasoningTrace</text>
+  <path class="arrow" d="M170,530 L170,570"/>
+
+  <!-- UI -->
+  <rect x="380" y="570" width="300" height="60" class="box"/>
+  <text x="530" y="595" class="label">Merchant Dashboard</text>
+  <text x="530" y="612" class="sublabel">/disputes, /disputes/[id], /metrics</text>
+  <path class="arrow" d="M320,600 L380,600"/>
+
+  <!-- Metrics -->
+  <rect x="740" y="570" width="300" height="60" class="box-det"/>
+  <text x="890" y="595" class="label">scripts/run-metrics.ts</text>
+  <text x="890" y="612" class="sublabel">53 disputes vs ground truth + baseline</text>
+  <path class="arrow" d="M680,600 L740,600"/>
+
+  <text x="20" y="690" font-size="11" fill="#9ca3af">Not shown: Gemini API (gemini-3.6-flash) called by dashed-blue boxes only — never called directly outside lib/llm.ts.</text>
+</svg>
