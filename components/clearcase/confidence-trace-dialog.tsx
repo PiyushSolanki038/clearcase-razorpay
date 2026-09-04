@@ -47,23 +47,23 @@ export function ConfidenceTraceDialog({ entries }: { entries: AuditEntryView[] }
         <DialogHeader>
           <DialogTitle>Confidence Trace</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {entries.length === 0 && (
             <p className="text-sm text-muted-foreground">
               No decisions run yet for this dispute.
             </p>
           )}
           {entries.map((entry) => (
-            <div key={entry.id} className="border rounded-md p-3">
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-medium text-sm">
+            <div key={entry.id} className="rounded-lg border border-border p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-medium text-sm text-foreground">
                   {STEP_LABELS[entry.step] ?? entry.step}
                 </span>
-                <span className="text-xs text-muted-foreground font-mono">
-                  {entry.currentHash.slice(0, 10)}...
+                <span className="text-xs text-muted-foreground font-mono tabular-nums">
+                  {entry.currentHash.slice(0, 10)}&hellip;
                 </span>
               </div>
-              <pre className="text-xs bg-muted rounded p-2 overflow-x-auto whitespace-pre-wrap">
+              <pre className="text-xs bg-muted rounded-md p-2.5 overflow-x-auto whitespace-pre-wrap text-muted-foreground">
                 {JSON.stringify(entry.payload, null, 2)}
               </pre>
             </div>

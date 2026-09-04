@@ -2,9 +2,10 @@
 // (no separate marketing page) — "/" redirects here.
 
 import Link from "next/link";
+import { Compass, Inbox } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatMoney, formatDeadline } from "@/lib/format";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -15,23 +16,29 @@ import {
 } from "@/components/ui/table";
 
 const URGENCY_STYLES: Record<string, string> = {
-  expired: "bg-red-100 text-red-800 border-red-300",
+  expired: "bg-red-50 text-red-700 border-red-200",
   urgent: "bg-red-50 text-red-700 border-red-200",
   soon: "bg-amber-50 text-amber-700 border-amber-200",
-  ok: "bg-green-50 text-green-700 border-green-200",
+  ok: "bg-secondary text-muted-foreground border-transparent",
 };
 
 const BAND_STYLES: Record<string, string> = {
-  HIGH: "bg-green-100 text-green-800",
-  MEDIUM: "bg-amber-100 text-amber-800",
-  LOW: "bg-red-100 text-red-800",
+  HIGH: "bg-success/15 text-green-800",
+  MEDIUM: "bg-warning/20 text-amber-800",
+  LOW: "bg-destructive/10 text-destructive",
+};
+
+const BAND_DOT: Record<string, string> = {
+  HIGH: "bg-green-600",
+  MEDIUM: "bg-amber-500",
+  LOW: "bg-destructive",
 };
 
 const ROW_BORDER_STYLES: Record<string, string> = {
   HIGH: "border-l-4 border-l-green-500",
-  MEDIUM: "border-l-4 border-l-yellow-500",
-  LOW: "border-l-4 border-l-red-500",
-  NONE: "border-l-4 border-l-gray-300",
+  MEDIUM: "border-l-4 border-l-amber-500",
+  LOW: "border-l-4 border-l-destructive",
+  NONE: "border-l-4 border-l-transparent",
 };
 
 const DEMO_EXAMPLES = [
@@ -59,25 +66,32 @@ export default async function DisputesPage({
     : [];
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <p className="text-sm text-muted-foreground mb-6">
-        Post-transaction rebuttals for Razorpay disputes — tuned for RuPay, UPI, and Indian
-        merchant evidence.
-      </p>
+    <div className="p-6 sm:p-8 max-w-6xl mx-auto">
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">Disputes</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Post-transaction rebuttals for Razorpay disputes — tuned for RuPay, UPI, and Indian
+          merchant evidence.{" "}
+          {disputes.length > 0 && (
+            <span className="text-foreground font-medium">{disputes.length} total</span>
+          )}
+        </p>
+      </div>
 
       {demoLinks.length > 0 && (
-        <div className="mb-6 border rounded-md p-4 bg-blue-50 border-blue-200">
-          <p className="text-sm font-medium mb-2">
+        <div className="mb-6 rounded-lg border border-primary/20 bg-accent p-4">
+          <p className="flex items-center gap-1.5 text-sm font-medium text-accent-foreground mb-3">
+            <Compass className="size-4" strokeWidth={2.25} />
             Walkthrough: 3 disputes showing each confidence band
           </p>
-          <div className="flex gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {demoLinks.map((ex) => (
               <Link
                 key={ex.razorpayDisputeId}
                 href={`/disputes/${ex.dispute!.id}`}
-                className="flex-1 border rounded p-3 bg-white hover:border-blue-400"
+                className="rounded-md border border-border bg-card p-3 shadow-sm transition-colors hover:border-primary/40 hover:shadow-md"
               >
-                <div className="text-xs font-semibold">{ex.label}</div>
+                <div className="text-xs font-semibold text-foreground">{ex.label}</div>
                 <div className="text-xs text-muted-foreground mt-1">{ex.description}</div>
               </Link>
             ))}
@@ -86,62 +100,91 @@ export default async function DisputesPage({
       )}
 
       {disputes.length === 0 ? (
-        <p className="text-sm text-muted-foreground py-12 text-center">
-          No disputes yet. Run <code className="bg-muted px-1 rounded">npx tsx scripts/seed-db.ts</code> or
-          POST to <code className="bg-muted px-1 rounded">/api/disputes/ingest</code>.
-        </p>
+        <Card className="items-center py-16 text-center">
+          <Inbox className="size-8 text-muted-foreground mx-auto mb-3" strokeWidth={1.5} />
+          <p className="text-sm font-medium text-foreground">No disputes yet</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Run <code className="bg-muted px-1.5 py-0.5 rounded text-xs">npx tsx scripts/seed-db.ts</code>{" "}
+            or POST to <code className="bg-muted px-1.5 py-0.5 rounded text-xs">/api/disputes/ingest</code>.
+          </p>
+        </Card>
       ) : (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Dispute</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Reason</TableHead>
-            <TableHead>Network</TableHead>
-            <TableHead>Deadline</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Confidence</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {disputes.map((d) => {
-            const deadline = formatDeadline(d.deadlineAt);
-            const latestDecision = d.decisions[0];
-            const rowBorder = ROW_BORDER_STYLES[latestDecision?.confidenceBand ?? "NONE"];
-            return (
-              <TableRow key={d.id} className={`cursor-pointer ${rowBorder}`}>
-                <TableCell>
-                  <Link href={`/disputes/${d.id}`} className="hover:underline font-medium">
-                    {d.razorpayDisputeId}
-                  </Link>
-                </TableCell>
-                <TableCell>{formatMoney(d.amount, d.currency)}</TableCell>
-                <TableCell>{d.reasonCodeRaw}</TableCell>
-                <TableCell className="capitalize">{d.network}</TableCell>
-                <TableCell>
-                  <span
-                    className={`inline-block rounded border px-2 py-0.5 text-xs ${URGENCY_STYLES[deadline.urgency]}`}
-                  >
-                    {deadline.label}
-                  </span>
-                </TableCell>
-                <TableCell className="capitalize">{d.status.replace("_", " ")}</TableCell>
-                <TableCell>
-                  {latestDecision ? (
-                    <span
-                      className={`inline-block rounded px-2 py-0.5 text-xs font-medium ${BAND_STYLES[latestDecision.confidenceBand]}`}
-                    >
-                      {latestDecision.confidenceBand}
-                    </span>
-                  ) : (
-                    <Badge variant="outline">Not analyzed</Badge>
-                  )}
-                </TableCell>
+        <Card className="py-0 overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="bg-muted/60 text-xs font-semibold uppercase tracking-wide text-muted-foreground py-3 pl-4">
+                  Dispute
+                </TableHead>
+                <TableHead className="bg-muted/60 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Amount
+                </TableHead>
+                <TableHead className="bg-muted/60 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Reason
+                </TableHead>
+                <TableHead className="bg-muted/60 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Network
+                </TableHead>
+                <TableHead className="bg-muted/60 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Deadline
+                </TableHead>
+                <TableHead className="bg-muted/60 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Status
+                </TableHead>
+                <TableHead className="bg-muted/60 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Confidence
+                </TableHead>
               </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+            </TableHeader>
+            <TableBody>
+              {disputes.map((d) => {
+                const deadline = formatDeadline(d.deadlineAt);
+                const latestDecision = d.decisions[0];
+                const rowBorder = ROW_BORDER_STYLES[latestDecision?.confidenceBand ?? "NONE"];
+                return (
+                  <TableRow key={d.id} className={`group ${rowBorder}`}>
+                    <TableCell className="pl-4">
+                      <Link
+                        href={`/disputes/${d.id}`}
+                        className="font-medium text-foreground group-hover:text-primary transition-colors"
+                      >
+                        {d.razorpayDisputeId}
+                      </Link>
+                    </TableCell>
+                    <TableCell className="tabular-nums">{formatMoney(d.amount, d.currency)}</TableCell>
+                    <TableCell className="tabular-nums text-muted-foreground">{d.reasonCodeRaw}</TableCell>
+                    <TableCell className="capitalize text-muted-foreground">{d.network}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-block rounded-full border px-2 py-0.5 text-xs font-medium ${URGENCY_STYLES[deadline.urgency]}`}
+                      >
+                        {deadline.label}
+                      </span>
+                    </TableCell>
+                    <TableCell className="capitalize text-muted-foreground">
+                      {d.status.replace("_", " ")}
+                    </TableCell>
+                    <TableCell>
+                      {latestDecision ? (
+                        <span
+                          className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-semibold ${BAND_STYLES[latestDecision.confidenceBand]}`}
+                        >
+                          <span className={`size-1.5 rounded-full ${BAND_DOT[latestDecision.confidenceBand]}`} />
+                          {latestDecision.confidenceBand}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                          <span className="size-1.5 rounded-full bg-gray-300" />
+                          Not analyzed
+                        </span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </Card>
       )}
     </div>
   );

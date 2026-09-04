@@ -5,7 +5,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CheckCircle2, AlertTriangle, XCircle, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -29,15 +31,21 @@ interface DecisionResult {
 }
 
 const BANNER_STYLES: Record<string, string> = {
-  HIGH: "bg-green-600 text-white",
-  MEDIUM: "bg-yellow-500 text-white",
-  LOW: "bg-red-600 text-white",
+  HIGH: "bg-success text-success-foreground",
+  MEDIUM: "bg-warning text-warning-foreground",
+  LOW: "bg-destructive text-white",
+};
+
+const BANNER_ICON: Record<string, typeof CheckCircle2> = {
+  HIGH: CheckCircle2,
+  MEDIUM: AlertTriangle,
+  LOW: XCircle,
 };
 
 const BANNER_TEXT: Record<string, string> = {
-  HIGH: "✓ HIGH CONFIDENCE — Rebuttal ready to submit",
-  MEDIUM: "⚠ MEDIUM CONFIDENCE — One document needed",
-  LOW: "✕ LOW CONFIDENCE — Recommend accepting",
+  HIGH: "HIGH CONFIDENCE — Rebuttal ready to submit",
+  MEDIUM: "MEDIUM CONFIDENCE — One document needed",
+  LOW: "LOW CONFIDENCE — Recommend accepting",
 };
 
 export function DecisionPanel({
@@ -119,43 +127,50 @@ export function DecisionPanel({
     }
   }
 
+  const BannerIcon = result ? BANNER_ICON[result.decision.confidenceBand] : null;
+
   return (
     <div className="space-y-4">
-      <h2 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-        Decision
-      </h2>
-
-      {docs.map((doc, i) => (
-        <div key={i} className="space-y-2">
-          <input
-            className="w-full text-sm border rounded px-2 py-1"
-            placeholder="Document type (e.g. courier_pod, brand_certificate)"
-            value={doc.docType}
-            onChange={(e) => updateDoc(i, "docType", e.target.value)}
-          />
-          <Textarea
-            placeholder="Paste evidence document text here..."
-            value={doc.rawText}
-            onChange={(e) => updateDoc(i, "rawText", e.target.value)}
-            rows={4}
-          />
-        </div>
-      ))}
+      <div className="space-y-3">
+        {docs.map((doc, i) => (
+          <div key={i} className="space-y-1.5">
+            <label className="text-xs font-medium text-muted-foreground">
+              Document type
+            </label>
+            <Input
+              placeholder="e.g. courier_pod, brand_certificate"
+              value={doc.docType}
+              onChange={(e) => updateDoc(i, "docType", e.target.value)}
+            />
+            <label className="text-xs font-medium text-muted-foreground">
+              Evidence text
+            </label>
+            <Textarea
+              placeholder="Paste evidence document text here..."
+              value={doc.rawText}
+              onChange={(e) => updateDoc(i, "rawText", e.target.value)}
+              rows={4}
+            />
+          </div>
+        ))}
+      </div>
       <Button
         variant="outline"
         size="sm"
         onClick={() => setDocs((prev) => [...prev, { docType: "", rawText: "" }])}
       >
-        + Add document
+        <Plus className="size-3.5" />
+        Add document
       </Button>
 
       {ce3Eligible && (
-        <div className="border rounded-md p-3 space-y-2 bg-muted/30">
-          <p className="text-xs font-medium">CE3.0 prior-transaction match (optional)</p>
+        <div className="rounded-lg border border-border bg-muted/40 p-3 space-y-2">
+          <p className="text-xs font-medium text-foreground">
+            CE3.0 prior-transaction match (optional)
+          </p>
           {(Object.keys(ce3Fields) as (keyof typeof ce3Fields)[]).map((key) => (
-            <input
+            <Input
               key={key}
-              className="w-full text-sm border rounded px-2 py-1"
               placeholder={key}
               value={ce3Fields[key]}
               onChange={(e) => setCe3Fields((prev) => ({ ...prev, [key]: e.target.value }))}
@@ -168,24 +183,27 @@ export function DecisionPanel({
         {loading ? "Analyzing..." : "Run analysis"}
       </Button>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       {result && (
         <>
           <Separator />
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div
-              className={`w-full rounded-md px-3 py-2 text-sm font-semibold text-center ${BANNER_STYLES[result.decision.confidenceBand]}`}
+              className={`flex items-center gap-2 w-full rounded-md px-3 py-2.5 text-sm font-semibold ${BANNER_STYLES[result.decision.confidenceBand]}`}
             >
+              {BannerIcon && <BannerIcon className="size-4 shrink-0" strokeWidth={2.25} />}
               {BANNER_TEXT[result.decision.confidenceBand]}
             </div>
             <div className="flex items-center gap-2">
               <Badge variant="outline">{result.decision.action}</Badge>
               {result.decision.submitted && (
-                <Badge className="bg-blue-100 text-blue-800">Submitted</Badge>
+                <Badge className="bg-primary/10 text-primary">Submitted</Badge>
               )}
             </div>
-            <p className="text-xs text-muted-foreground">{result.route.reasoning}</p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {result.route.reasoning}
+            </p>
 
             {result.decision.missingItems && result.decision.missingItems.length > 0 && (
               <p className="text-sm">
@@ -194,7 +212,7 @@ export function DecisionPanel({
             )}
 
             {result.decision.rebuttalText && (
-              <div className="text-sm border rounded p-3 whitespace-pre-wrap bg-muted/30">
+              <div className="text-sm rounded-lg border border-border p-3 whitespace-pre-wrap bg-muted/40 leading-relaxed">
                 {result.decision.rebuttalText}
               </div>
             )}
