@@ -1,0 +1,43 @@
+{
+  "entity": "event",
+  "event": "dispute.created",
+  "payload": {
+    "dispute": {
+      "entity": {
+        "id": "disp_QClowNoEvidence126",
+        "entity": "dispute",
+        "payment_id": "pay_QClowPayment03",
+        "amount": 899900,
+        "currency": "INR",
+        "amount_deducted": 0,
+        "reason_code": "12.6",
+        "reason_description": "Duplicate Processing",
+        "respond_by": 1757203200,
+        "status": "open",
+        "phase": "chargeback",
+        "created_at": 1754697600,
+        "evidence": {
+          "amount": 899900,
+          "summary": null,
+          "shipping_proof": null,
+          "billing_proof": null,
+          "cancellation_proof": null,
+          "customer_communication": null,
+          "proof_of_service": null,
+          "explanation_letter": null,
+          "refund_confirmation": null,
+          "access_activity_log": null,
+          "refund_cancellation_policy": null,
+          "term_and_conditions": null,
+          "others": null,
+          "submitted_at": null
+        }
+      }
+    }
+  },
+  "ground_truth": {
+    "label": "should_lose",
+    "network": "visa",
+    "notes": "Merchant genuinely double-charged the cardholder due to a gateway retry bug. No evidence exists to rebut because there isn't a legitimate second transaction. Correct move: recommend accept, refund the duplicate charge."
+  }
+}

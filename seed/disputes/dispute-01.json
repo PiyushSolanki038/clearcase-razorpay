@@ -1,0 +1,43 @@
+{
+  "entity": "event",
+  "event": "dispute.created",
+  "payload": {
+    "dispute": {
+      "entity": {
+        "id": "disp_QCleaHIGHVisa131",
+        "entity": "dispute",
+        "payment_id": "pay_QCcleanPayment01",
+        "amount": 499900,
+        "currency": "INR",
+        "amount_deducted": 0,
+        "reason_code": "13.1",
+        "reason_description": "Merchandise/Services Not Received",
+        "respond_by": 1757548800,
+        "status": "open",
+        "phase": "chargeback",
+        "created_at": 1755043200,
+        "evidence": {
+          "amount": 499900,
+          "summary": null,
+          "shipping_proof": null,
+          "billing_proof": null,
+          "cancellation_proof": null,
+          "customer_communication": null,
+          "proof_of_service": null,
+          "explanation_letter": null,
+          "refund_confirmation": null,
+          "access_activity_log": null,
+          "refund_cancellation_policy": null,
+          "term_and_conditions": null,
+          "others": null,
+          "submitted_at": null
+        }
+      }
+    }
+  },
+  "ground_truth": {
+    "label": "should_win",
+    "network": "visa",
+    "notes": "Merchant has signed courier POD with OTP delivery log matching cardholder address. Clear evidence, all required docs present."
+  }
+}

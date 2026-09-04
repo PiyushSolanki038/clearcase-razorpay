@@ -1,0 +1,101 @@
+// Day 0 draft — schema design only. Migration happens Day 1 (see ROADMAP.md Hr 5-6).
+// Tables per CLAUDE.md "Database schema (Prisma)" section.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum DisputeNetwork {
+  visa
+  rupay
+  mastercard
+}
+
+enum DisputeStatus {
+  open
+  under_review
+  won
+  lost
+  closed
+}
+
+enum ConfidenceBand {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum DecisionAction {
+  AUTO_REBUT
+  REQUEST_DOC
+  RECOMMEND_ACCEPT
+}
+
+model Dispute {
+  id                    String          @id @default(cuid())
+  razorpayDisputeId     String          @unique
+  paymentId             String
+  amount                Int
+  currency              String
+  network               DisputeNetwork
+  reasonCodeRaw         String
+  reasonCodeCanonical   String?
+  deadlineAt            DateTime
+  status                DisputeStatus   @default(open)
+  createdAt             DateTime        @default(now())
+
+  evidenceDocs          EvidenceDoc[]
+  decisions             Decision[]
+  auditEntries          AuditEntry[]
+}
+
+model EvidenceDoc {
+  id            String    @id @default(cuid())
+  disputeId     String
+  dispute       Dispute   @relation(fields: [disputeId], references: [id])
+  fileUrl       String
+  docType       String
+  extractedAt   DateTime?
+  rawText       String?
+
+  claims        ExtractedClaim[]
+}
+
+model ExtractedClaim {
+  id             String       @id @default(cuid())
+  evidenceDocId  String
+  evidenceDoc    EvidenceDoc  @relation(fields: [evidenceDocId], references: [id])
+  claimType      String
+  claimData      Json
+  confidence     Float
+  sourceSpan     String?
+}
+
+model Decision {
+  id               String          @id @default(cuid())
+  disputeId        String
+  dispute          Dispute         @relation(fields: [disputeId], references: [id])
+  confidenceBand   ConfidenceBand
+  action           DecisionAction
+  rebuttalText     String?
+  missingItems     Json?
+  reasoningTrace   Json
+  createdAt        DateTime        @default(now())
+}
+
+model AuditEntry {
+  id           String    @id @default(cuid())
+  disputeId    String
+  dispute      Dispute   @relation(fields: [disputeId], references: [id])
+  step         String
+  payload      Json
+  prevHash     String
+  currentHash  String
+  createdAt    DateTime  @default(now())
+}

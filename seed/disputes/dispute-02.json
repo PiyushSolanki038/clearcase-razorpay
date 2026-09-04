@@ -1,0 +1,43 @@
+{
+  "entity": "event",
+  "event": "dispute.created",
+  "payload": {
+    "dispute": {
+      "entity": {
+        "id": "disp_QCmedMissingDoc134",
+        "entity": "dispute",
+        "payment_id": "pay_QCmedPayment02",
+        "amount": 129900,
+        "currency": "INR",
+        "amount_deducted": 0,
+        "reason_code": "13.4",
+        "reason_description": "Counterfeit Goods",
+        "respond_by": 1757635200,
+        "status": "open",
+        "phase": "chargeback",
+        "created_at": 1755129600,
+        "evidence": {
+          "amount": 129900,
+          "summary": null,
+          "shipping_proof": "shp_proof_002.pdf",
+          "billing_proof": null,
+          "cancellation_proof": null,
+          "customer_communication": "chat_log_002.pdf",
+          "proof_of_service": null,
+          "explanation_letter": null,
+          "refund_confirmation": null,
+          "access_activity_log": null,
+          "refund_cancellation_policy": null,
+          "term_and_conditions": null,
+          "others": null,
+          "submitted_at": null
+        }
+      }
+    }
+  },
+  "ground_truth": {
+    "label": "should_ask_for_authenticity_certificate",
+    "network": "visa",
+    "notes": "Merchant has shipping proof and customer chat log but is missing brand authenticity certificate required for 13.4 counterfeit rebuttals. One doc away from a strong case."
+  }
+}

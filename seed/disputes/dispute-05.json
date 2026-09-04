@@ -1,0 +1,43 @@
+{
+  "entity": "event",
+  "event": "dispute.created",
+  "payload": {
+    "dispute": {
+      "entity": {
+        "id": "disp_QCrupayEdgeExpired1062",
+        "entity": "dispute",
+        "payment_id": "pay_QCrupayPayment05",
+        "amount": 349900,
+        "currency": "INR",
+        "amount_deducted": 349900,
+        "reason_code": "1062",
+        "reason_description": "Goods and services not as described or defective",
+        "respond_by": 1755302400,
+        "status": "lost",
+        "phase": "chargeback",
+        "created_at": 1752624000,
+        "evidence": {
+          "amount": 349900,
+          "summary": "Merchant response window closed before evidence could be submitted.",
+          "shipping_proof": null,
+          "billing_proof": null,
+          "cancellation_proof": null,
+          "customer_communication": null,
+          "proof_of_service": null,
+          "explanation_letter": null,
+          "refund_confirmation": null,
+          "access_activity_log": null,
+          "refund_cancellation_policy": null,
+          "term_and_conditions": null,
+          "others": null,
+          "submitted_at": null
+        }
+      }
+    }
+  },
+  "ground_truth": {
+    "label": "should_lose",
+    "network": "rupay",
+    "notes": "Edge case: response window (respond_by) already expired by the time the merchant engaged. System should flag as expired-window and recommend accept regardless of evidence quality, since RuPay/NPCI will not accept late submissions."
+  }
+}

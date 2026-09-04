@@ -1,0 +1,43 @@
+{
+  "entity": "event",
+  "event": "dispute.created",
+  "payload": {
+    "dispute": {
+      "entity": {
+        "id": "disp_QCrupayHigh1061",
+        "entity": "dispute",
+        "payment_id": "pay_QCrupayPayment04",
+        "amount": 249900,
+        "currency": "INR",
+        "amount_deducted": 0,
+        "reason_code": "1061",
+        "reason_description": "Credit not processed for cancelled or returned goods and services",
+        "respond_by": 1757462400,
+        "status": "open",
+        "phase": "chargeback",
+        "created_at": 1754956800,
+        "evidence": {
+          "amount": 249900,
+          "summary": null,
+          "shipping_proof": null,
+          "billing_proof": null,
+          "cancellation_proof": "return_confirmation_004.pdf",
+          "customer_communication": "whatsapp_thread_004.pdf",
+          "proof_of_service": null,
+          "explanation_letter": null,
+          "refund_confirmation": "refund_txn_004.pdf",
+          "access_activity_log": null,
+          "refund_cancellation_policy": "return_policy_004.pdf",
+          "term_and_conditions": null,
+          "others": null,
+          "submitted_at": null
+        }
+      }
+    }
+  },
+  "ground_truth": {
+    "label": "should_win",
+    "network": "rupay",
+    "notes": "Merchant already refunded via Razorpay refund API before the chargeback was raised. Refund confirmation + return policy + WhatsApp thread (Indian merchant reality per positioning doc) are all present and dated correctly."
+  }
+}
