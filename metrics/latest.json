@@ -1,0 +1,622 @@
+{
+  "generatedAt": "2026-09-04T15:30:14.267Z",
+  "metrics": {
+    "totalDisputes": 53,
+    "autoResolutionRate": 0.9056603773584906,
+    "falseConfidenceRate": 0,
+    "missingDocPrecision": 1,
+    "recommendAcceptPrecision": 1,
+    "averageDecisionLatencyMs": 0.03218301886792842,
+    "baselineWinRate": 0.5094339622641509,
+    "systemWinRate": 0.6037735849056604,
+    "baselineDeltaPercentagePoints": 9.433962264150942
+  },
+  "targets": {
+    "autoResolutionRate": "55-70%",
+    "falseConfidenceRate": "<5%",
+    "missingDocPrecision": ">90%",
+    "recommendAcceptPrecision": ">90%",
+    "averageDecisionLatencyMs": "<3000ms (excluding LLM calls)",
+    "baselineDeltaPercentagePoints": ">=15pp"
+  },
+  "baselineMethodology": "Baseline = a generic templated rebuttal with no rulebook grounding, that blindly contests every dispute. Its win rate is the fraction of disputes that were genuinely winnable (should_win) since it never identifies missing evidence or checks exclusions. 3 sample baseline rebuttal texts are included below for qualitative comparison; the win-rate delta itself is computed structurally from ground truth for all disputes.",
+  "baselineSamples": [
+    {
+      "razorpayDisputeId": "disp_seed000",
+      "body": "To Visa Dispute Resolution Department,\n\nSubject: Formal Chargeback Rebuttal – Visa Reason Code 13.1 (Amount: 500.00 INR)\n\nDear Representative,\n\nWe are writing to formally contest the chargeback initiated against our merchant account under Visa Reason Code 13.1 (Merchandise/Services Not Received) for the amount of 500.00 INR.\n\nWe maintain that the transaction was fully legitimate, authorized, and fulfilled in accordance with our terms of service and standard purchasing agreements. The merchandise or service associated with this order was successfully rendered/delivered to the cardholder.\n\nTo support our position and demonstrate proper fulfillment, we have enclosed the following compelling evidence for your review:\n1. Transaction Receipt & Authorization Code\n2. Order Confirmation and Itemized Invoice\n3. Proof of Delivery / Proof of Service Completion\n4. Customer Communication and Tracking Logs\n\nBecause the cardholder received the requested items/services as agreed, the claim of non-receipt is invalid. We respectfully request that you review the attached documentation, resolve this dispute in our favor, and re-credit the amount of 500.00 INR to our merchant account.\n\nThank you for your time and assistance in resolving this matter.\n\nSincerely,\nMerchant Dispute Department"
+    },
+    {
+      "razorpayDisputeId": "disp_seed001",
+      "body": "Dear Dispute Processing Team,\n\nWe are writing to formally contest the chargeback initiated under Visa Reason Code 13.1 for the amount of 879.19 INR.\n\nWe respectfully submit that this chargeback is invalid. The order associated with this transaction was fully processed, fulfilled, and delivered in accordance with our terms of service and the customer's agreement at the time of purchase.\n\nSummary of Case:\n- Network: Visa\n- Reason Code: 13.1 (Merchandise/Services Not Received)\n- Disputed Amount: 879.19 INR\n\nKey Points for Rebuttal:\n1. The customer authorized the transaction and agreed to our standard terms and conditions.\n2. The merchandise or service was successfully provided/delivered as requested.\n3. Enclosed with this letter, please find the compelling evidence including order details, fulfillment/delivery confirmation, and communication records validating the completion of this order.\n\nBased on the attached documentation, we request that you resolve this dispute in our favor and credit the amount of 879.19 INR back to our merchant account.\n\nThank you for your time and prompt attention to this matter.\n\nSincerely,\nMerchant Representative"
+    },
+    {
+      "razorpayDisputeId": "disp_seed002",
+      "body": "Dear Chargeback Analyst / Dispute Department,\n\nWe are writing to formally contest the chargeback issued under Visa Reason Code 13.1 for the amount of 1258.38 INR.\n\nWe strongly contend that this chargeback is invalid. The order placed by the cardholder was properly processed, fulfilled, and successfully delivered/rendered in full accordance with our standard terms and conditions.\n\nTo support our position, we have provided the following compelling evidence:\n- Transaction details and order confirmation validating the purchase.\n- Proof of delivery / fulfillment confirmation confirming receipt or completion.\n- Terms of service and policy acknowledgments agreed to by the cardholder.\n\nBased on the enclosed evidence, the claim that merchandise or services were not received is unsupported. We respectfully request that you review these details, rule in our favor, and reverse the chargeback amount of 1258.38 INR back to our account.\n\nThank you for your prompt assistance in resolving this matter.\n\nSincerely,\nMerchant Support Team"
+    }
+  ],
+  "perDisputeDetail": [
+    {
+      "razorpayDisputeId": "disp_seed000",
+      "network": "visa",
+      "reasonCodeRaw": "13.1",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_received (13.1). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed001",
+      "network": "visa",
+      "reasonCodeRaw": "13.1",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_received (13.1). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed002",
+      "network": "visa",
+      "reasonCodeRaw": "13.1",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_received (13.1). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed003",
+      "network": "visa",
+      "reasonCodeRaw": "13.1",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_received (13.1). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed004",
+      "network": "visa",
+      "reasonCodeRaw": "13.1",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_received (13.1). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed005",
+      "network": "visa",
+      "reasonCodeRaw": "13.1",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_received (13.1). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed006",
+      "network": "visa",
+      "reasonCodeRaw": "13.1",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "No credible evidence exists for not_received (13.1) — merchant's underlying claim doesn't hold up. Recommend accept.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(proof_of_delivery).",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed007",
+      "network": "visa",
+      "reasonCodeRaw": "13.1",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "No credible evidence exists for not_received (13.1) — merchant's underlying claim doesn't hold up. Recommend accept.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(proof_of_delivery).",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed008",
+      "network": "visa",
+      "reasonCodeRaw": "13.1",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "No credible evidence exists for not_received (13.1) — merchant's underlying claim doesn't hold up. Recommend accept.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(proof_of_delivery).",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed009",
+      "network": "visa",
+      "reasonCodeRaw": "13.1",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "Edge case: reason code raw value doesn't cleanly map to a canonical rulebook entry; requires manual classification review.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(proof_of_delivery).",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed010",
+      "network": "rupay",
+      "reasonCodeRaw": "1061",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_received (1061). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed011",
+      "network": "rupay",
+      "reasonCodeRaw": "1061",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_received (1061). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed012",
+      "network": "rupay",
+      "reasonCodeRaw": "1061",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_received (1061). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed013",
+      "network": "rupay",
+      "reasonCodeRaw": "1061",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_received (1061). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed014",
+      "network": "rupay",
+      "reasonCodeRaw": "1061",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "No credible evidence exists for not_received (1061) — merchant's underlying claim doesn't hold up. Recommend accept.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(proof_of_delivery).",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed015",
+      "network": "rupay",
+      "reasonCodeRaw": "1061",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "No credible evidence exists for not_received (1061) — merchant's underlying claim doesn't hold up. Recommend accept.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(proof_of_delivery).",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed016",
+      "network": "rupay",
+      "reasonCodeRaw": "1061",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "No credible evidence exists for not_received (1061) — merchant's underlying claim doesn't hold up. Recommend accept.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(proof_of_delivery).",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed017",
+      "network": "rupay",
+      "reasonCodeRaw": "1061",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "Edge case: reason code raw value doesn't cleanly map to a canonical rulebook entry; requires manual classification review.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(proof_of_delivery).",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed018",
+      "network": "visa",
+      "reasonCodeRaw": "13.4",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_as_described (13.4). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed019",
+      "network": "visa",
+      "reasonCodeRaw": "13.4",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_as_described (13.4). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed020",
+      "network": "visa",
+      "reasonCodeRaw": "13.4",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_as_described (13.4). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed021",
+      "network": "visa",
+      "reasonCodeRaw": "13.4",
+      "groundTruthLabel": "should_ask_for_doc",
+      "groundTruthNotes": "Merchant is missing \"authenticity_certificate\" — otherwise strong case for not_as_described.",
+      "systemBand": "MEDIUM",
+      "systemAction": "REQUEST_DOC",
+      "systemReasoning": "One evidence item missing: authenticity_certificate. Otherwise a strong case.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed022",
+      "network": "visa",
+      "reasonCodeRaw": "13.4",
+      "groundTruthLabel": "should_ask_for_doc",
+      "groundTruthNotes": "Merchant is missing \"authenticity_certificate\" — otherwise strong case for not_as_described.",
+      "systemBand": "MEDIUM",
+      "systemAction": "REQUEST_DOC",
+      "systemReasoning": "One evidence item missing: authenticity_certificate. Otherwise a strong case.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed023",
+      "network": "visa",
+      "reasonCodeRaw": "13.4",
+      "groundTruthLabel": "should_ask_for_doc",
+      "groundTruthNotes": "Merchant is missing \"authenticity_certificate\" — otherwise strong case for not_as_described.",
+      "systemBand": "MEDIUM",
+      "systemAction": "REQUEST_DOC",
+      "systemReasoning": "One evidence item missing: authenticity_certificate. Otherwise a strong case.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed024",
+      "network": "visa",
+      "reasonCodeRaw": "13.4",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "No credible evidence exists for not_as_described (13.4) — merchant's underlying claim doesn't hold up. Recommend accept.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: authenticity_certificate, product_description_match.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed025",
+      "network": "visa",
+      "reasonCodeRaw": "13.4",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "No credible evidence exists for not_as_described (13.4) — merchant's underlying claim doesn't hold up. Recommend accept.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: authenticity_certificate, product_description_match.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed026",
+      "network": "visa",
+      "reasonCodeRaw": "13.4",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "Edge case: response window already expired before merchant could respond. Recommend accept regardless of evidence quality.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Response window has already expired — no evidence quality can change the outcome.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed027",
+      "network": "rupay",
+      "reasonCodeRaw": "1062",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_as_described (1062). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed028",
+      "network": "rupay",
+      "reasonCodeRaw": "1062",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_as_described (1062). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed029",
+      "network": "rupay",
+      "reasonCodeRaw": "1062",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_as_described (1062). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed030",
+      "network": "rupay",
+      "reasonCodeRaw": "1062",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for not_as_described (1062). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed031",
+      "network": "rupay",
+      "reasonCodeRaw": "1062",
+      "groundTruthLabel": "should_ask_for_doc",
+      "groundTruthNotes": "Merchant is missing \"authenticity_certificate\" — otherwise strong case for not_as_described.",
+      "systemBand": "MEDIUM",
+      "systemAction": "REQUEST_DOC",
+      "systemReasoning": "One evidence item missing: authenticity_certificate. Otherwise a strong case.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed032",
+      "network": "rupay",
+      "reasonCodeRaw": "1062",
+      "groundTruthLabel": "should_ask_for_doc",
+      "groundTruthNotes": "Merchant is missing \"authenticity_certificate\" — otherwise strong case for not_as_described.",
+      "systemBand": "MEDIUM",
+      "systemAction": "REQUEST_DOC",
+      "systemReasoning": "One evidence item missing: authenticity_certificate. Otherwise a strong case.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed033",
+      "network": "rupay",
+      "reasonCodeRaw": "1062",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "No credible evidence exists for not_as_described (1062) — merchant's underlying claim doesn't hold up. Recommend accept.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: authenticity_certificate, product_description_match.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed034",
+      "network": "rupay",
+      "reasonCodeRaw": "1062",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "Edge case: reason code raw value doesn't cleanly map to a canonical rulebook entry; requires manual classification review.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: authenticity_certificate, product_description_match.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed035",
+      "network": "visa",
+      "reasonCodeRaw": "12.6",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for duplicate_processing (12.6). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed036",
+      "network": "visa",
+      "reasonCodeRaw": "12.6",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for duplicate_processing (12.6). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed037",
+      "network": "visa",
+      "reasonCodeRaw": "12.6",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for duplicate_processing (12.6). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed038",
+      "network": "visa",
+      "reasonCodeRaw": "12.6",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for duplicate_processing (12.6). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed039",
+      "network": "visa",
+      "reasonCodeRaw": "12.6",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for duplicate_processing (12.6). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed040",
+      "network": "visa",
+      "reasonCodeRaw": "12.6",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "No credible evidence exists for duplicate_processing (12.6) — merchant's underlying claim doesn't hold up. Recommend accept.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(duplicate_txn_proof).",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed041",
+      "network": "visa",
+      "reasonCodeRaw": "12.6",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "No credible evidence exists for duplicate_processing (12.6) — merchant's underlying claim doesn't hold up. Recommend accept.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(duplicate_txn_proof).",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed042",
+      "network": "visa",
+      "reasonCodeRaw": "12.6",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "Edge case: reason code raw value doesn't cleanly map to a canonical rulebook entry; requires manual classification review.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(duplicate_txn_proof).",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed043",
+      "network": "rupay",
+      "reasonCodeRaw": "1002",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for duplicate_processing (1002). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed044",
+      "network": "rupay",
+      "reasonCodeRaw": "1002",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for duplicate_processing (1002). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed045",
+      "network": "rupay",
+      "reasonCodeRaw": "1002",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for duplicate_processing (1002). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed046",
+      "network": "rupay",
+      "reasonCodeRaw": "1002",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "Merchant has all required evidence for duplicate_processing (1002). Clear win.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed047",
+      "network": "rupay",
+      "reasonCodeRaw": "1002",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "No credible evidence exists for duplicate_processing (1002) — merchant's underlying claim doesn't hold up. Recommend accept.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(duplicate_txn_proof).",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed048",
+      "network": "rupay",
+      "reasonCodeRaw": "1002",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "No credible evidence exists for duplicate_processing (1002) — merchant's underlying claim doesn't hold up. Recommend accept.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(duplicate_txn_proof).",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_seed049",
+      "network": "rupay",
+      "reasonCodeRaw": "1002",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "No credible evidence exists for duplicate_processing (1002) — merchant's underlying claim doesn't hold up. Recommend accept.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(duplicate_txn_proof).",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_ce3_high",
+      "network": "visa",
+      "reasonCodeRaw": "10.4",
+      "groundTruthLabel": "should_win",
+      "groundTruthNotes": "CE3.0-eligible: 3 prior undisputed transactions (cardholder_A) in the 120-365 day window match on account_id, device_id, shipping_address, and ip_address.",
+      "systemBand": "HIGH",
+      "systemAction": "AUTO_REBUT",
+      "systemReasoning": "All required evidence present. Rebuttal package can be generated automatically.",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_ce3_low_window",
+      "network": "visa",
+      "reasonCodeRaw": "10.4",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "Not CE3.0-eligible: cardholder_B's only prior transactions fall outside the 120-365 day window (one too old, one too recent).",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(ce3_prior_transactions).",
+      "correct": true
+    },
+    {
+      "razorpayDisputeId": "disp_ce3_low_elements",
+      "network": "visa",
+      "reasonCodeRaw": "10.4",
+      "groundTruthLabel": "should_lose",
+      "groundTruthNotes": "Not CE3.0-eligible: cardholder_C has 2 qualifying prior transactions in-window, but they only share 1 matching data element (device_id) — the 2-of-4 rule needs 2 element types.",
+      "systemBand": "LOW",
+      "systemAction": "RECOMMEND_ACCEPT",
+      "systemReasoning": "Evidence score too low (0.00) to justify contesting — missing: any_one_of(ce3_prior_transactions).",
+      "correct": true
+    }
+  ]
+}

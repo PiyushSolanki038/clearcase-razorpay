@@ -10,7 +10,10 @@ import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
 import type { ZodType } from "zod";
 
-const MODEL = "gemini-2.5-flash";
+// gemini-2.5-flash was deprecated for new-user API keys as of this session (Sept 2026) —
+// the API itself now returns 404 and points to gemini-3.6-flash. Switched here on Day 5
+// after hitting that live; CLAUDE.md's locked-stack section updated to match.
+const MODEL = "gemini-3.6-flash";
 const CACHE_DIR = path.join(process.cwd(), ".llm-cache");
 const MAX_RETRIES = 3;
 

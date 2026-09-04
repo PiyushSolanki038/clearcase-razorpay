@@ -27,22 +27,71 @@ const BAND_STYLES: Record<string, string> = {
   LOW: "bg-red-100 text-red-800",
 };
 
-export default async function DisputesPage() {
+const DEMO_EXAMPLES = [
+  { razorpayDisputeId: "disp_seed000", label: "HIGH — clean win", description: "Full delivery proof, auto-generates a rebuttal" },
+  { razorpayDisputeId: "disp_seed021", label: "MEDIUM — missing one doc", description: "Has authenticity cert, missing product match" },
+  { razorpayDisputeId: "disp_seed008", label: "LOW — honest accept", description: "No credible evidence, recommends accepting" },
+];
+
+export default async function DisputesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ demo?: string }>;
+}) {
+  const { demo } = await searchParams;
   const disputes = await prisma.dispute.findMany({
     orderBy: { deadlineAt: "asc" },
     include: { decisions: { orderBy: { createdAt: "desc" }, take: 1 } },
   });
 
+  const demoLinks = demo
+    ? DEMO_EXAMPLES.map((ex) => ({
+        ...ex,
+        dispute: disputes.find((d) => d.razorpayDisputeId === ex.razorpayDisputeId),
+      })).filter((ex) => ex.dispute)
+    : [];
+
   return (
     <div className="p-8 max-w-6xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold">ClearCase</h1>
-        <p className="text-sm text-muted-foreground">
-          Post-transaction rebuttals for Razorpay disputes — tuned for RuPay, UPI, and
-          Indian merchant evidence.
-        </p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold">ClearCase</h1>
+          <p className="text-sm text-muted-foreground">
+            Post-transaction rebuttals for Razorpay disputes — tuned for RuPay, UPI, and
+            Indian merchant evidence.
+          </p>
+        </div>
+        <Link href="/metrics" className="text-sm text-muted-foreground hover:underline">
+          Metrics &rarr;
+        </Link>
       </div>
 
+      {demoLinks.length > 0 && (
+        <div className="mb-6 border rounded-md p-4 bg-blue-50 border-blue-200">
+          <p className="text-sm font-medium mb-2">
+            Walkthrough: 3 disputes showing each confidence band
+          </p>
+          <div className="flex gap-3">
+            {demoLinks.map((ex) => (
+              <Link
+                key={ex.razorpayDisputeId}
+                href={`/disputes/${ex.dispute!.id}`}
+                className="flex-1 border rounded p-3 bg-white hover:border-blue-400"
+              >
+                <div className="text-xs font-semibold">{ex.label}</div>
+                <div className="text-xs text-muted-foreground mt-1">{ex.description}</div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {disputes.length === 0 ? (
+        <p className="text-sm text-muted-foreground py-12 text-center">
+          No disputes yet. Run <code className="bg-muted px-1 rounded">npx tsx scripts/seed-db.ts</code> or
+          POST to <code className="bg-muted px-1 rounded">/api/disputes/ingest</code>.
+        </p>
+      ) : (
       <Table>
         <TableHeader>
           <TableRow>
@@ -93,6 +142,7 @@ export default async function DisputesPage() {
           })}
         </TableBody>
       </Table>
+      )}
     </div>
   );
 }

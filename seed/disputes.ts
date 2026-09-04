@@ -46,13 +46,21 @@ const CODE_GROUPS: CodeGroup[] = [
 ];
 
 // Per group, per network: [HIGH count, MEDIUM count, LOW count, EDGE count]
+//
+// group0 (not_received) and group2 (duplicate_processing) have only ONE required
+// evidence type in the rulebook (any_one_of with a single entry) — there is no valid
+// "missing exactly one doc, otherwise strong" state for those, since the one doc IS the
+// whole requirement. Zeroed their MEDIUM quota and redistributed into HIGH/LOW (Day 5
+// fix, found via a live metrics run: the router was correctly scoring these as LOW,
+// exposing a ground-truth design flaw, not a router bug). Only group1 (not_as_described,
+// all_required with 2 items) can validly support a MEDIUM bucket.
 const QUOTAS: [number, number, number, number][] = [
-  [4, 3, 2, 1], // group0 visa
-  [3, 2, 2, 1], // group0 rupay
+  [6, 0, 3, 1], // group0 visa
+  [4, 0, 3, 1], // group0 rupay
   [3, 3, 2, 1], // group1 visa
   [4, 2, 1, 1], // group1 rupay
-  [3, 3, 1, 1], // group2 visa
-  [3, 2, 2, 0], // group2 rupay
+  [5, 0, 2, 1], // group2 visa
+  [4, 0, 3, 0], // group2 rupay
 ];
 
 const BASE_DATE = new Date("2026-08-20T00:00:00Z").getTime();

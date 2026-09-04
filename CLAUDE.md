@@ -40,7 +40,7 @@ Every commit, every doc line, every UI copy string must support this framing.
 - **Styling**: Tailwind CSS + shadcn/ui components
 - **Database**: PostgreSQL via Supabase (free tier)
 - **ORM**: Prisma — pinned to `6.19.3` (not latest). Prisma 7/8 moved connection URLs out of `schema.prisma` into `prisma.config.ts`, which would break the documented schema pattern below. Do not upgrade mid-build.
-- **LLM**: Google Gemini API (free tier) — use `gemini-2.5-flash` for extraction, classification, and rebuttal generation. SDK: `@google/genai`. Chosen because it has a genuine free tier with limits that fit this project (~1500 req/day). All LLM logic lives in `lib/llm.ts`.
+- **LLM**: Google Gemini API (free tier) — use `gemini-3.6-flash` for extraction, classification, and rebuttal generation (switched from `gemini-2.5-flash` on Day 5 after it was deprecated for new-user API keys — the API started returning 404 and pointing to 3.6). SDK: `@google/genai`. Real observed free-tier limits varied sharply by key (as low as 5 req/min / 20 req/day on one key) — do not assume ~1500 req/day holds; keep prompts cache-friendly (see `seed/evidenceTemplates.ts`) so a full metrics run stays cheap. All LLM logic lives in `lib/llm.ts`.
 - **File storage**: Supabase Storage
 - **Auth**: Skip for MVP (single hardcoded user). Add Clerk only if time permits on Day 5.
 - **Deployment**: Vercel
@@ -165,18 +165,20 @@ Core tables:
 
 ---
 
-## Metrics we must ship (Day 5 target numbers)
+## Metrics we must ship (Day 5 — actual measured numbers)
 
-Run `scripts/run-metrics.ts` across all 50 seed disputes. Report:
+Run `scripts/run-metrics.ts` across all 53 seed disputes (50 + 3 CE3.0 demo disputes added Day 3). Original targets vs. what we actually measured, with honest ground truth (see Day 5 finding below):
 
-- **Auto-resolution rate**: target 55–70%
-- **False-confidence rate**: target < 5% (cases we said HIGH but ground truth would lose)
-- **Missing-doc precision**: target > 90% (when we ask for a doc, is it actually the right doc)
-- **Recommend-accept precision**: target > 90% (when we say "give up", would merchant actually lose)
-- **Average end-to-end latency**: target < 3s excluding LLM calls
-- **Baseline comparison**: our win-rate vs "generic template response" baseline — target delta ≥ 15 percentage points
+- **Auto-resolution rate**: target 55–70% — **measured 90.6%**. Missed on purpose, not by accident: only `not_as_described` (2 required evidence items) can validly produce a MEDIUM case in our 3-reason-code rulebook; `not_received` and `duplicate_processing` have a single required evidence item each, so "missing the one doc" is indistinguishable from "no evidence" — there's no valid partial state. This is a real characteristic of these specific reason codes, not a system flaw: evidence for them is genuinely closer to binary.
+- **False-confidence rate**: target < 5% — **measured 0.0%**.
+- **Missing-doc precision**: target > 90% — **measured 100.0%**.
+- **Recommend-accept precision**: target > 90% — **measured 100.0%**.
+- **Average decision latency**: target < 3s excluding LLM calls — **measured ~0.03-0.08ms** (the deterministic exclusion/score/route steps are near-instant; LLM calls are the real bottleneck and are excluded from this figure per the target's own definition).
+- **Baseline comparison**: target delta ≥ 15pp — **measured 9.4pp** (system 60.4% vs. baseline 50.9% win rate). Below target for the same structural reason as auto-resolution — with only one reason code able to produce a MEDIUM/missing-doc win, the system's edge over a blind-contest baseline is smaller than it would be with a richer evidence-tier mix.
 
-These numbers **must** appear in the metrics page and the pitch video. If you can't hit them, we adjust the demo scope, not the numbers.
+Decision made explicitly with Piyush on Day 5: ship the real numbers, don't tune the dataset or definitions to hit the original targets. The README and pitch video present these as measured results and explain the auto-resolution/baseline-delta shortfall honestly rather than hiding it — this is itself a demonstration of the product's core promise (surfacing its own failure modes, not just its wins).
+
+These numbers **must** appear in the metrics page and the pitch video.
 
 ---
 
