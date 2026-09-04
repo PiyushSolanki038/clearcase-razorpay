@@ -4,7 +4,7 @@
 
 ---
 
-## Today (Day 1 — Sun 31 Aug)
+## Today (Day 2 — Mon 1 Sept)
 
 _(empty — full day complete, see Done today)_
 
@@ -12,23 +12,25 @@ _(empty — full day complete, see Done today)_
 
 ## Done today
 
-- [x] Expanded `seed/disputes.ts` to 50 synthetic disputes (deterministic generator, not hand-written JSON) — 3 canonical reason-code families x 2 networks, distribution 40% HIGH / 30% MEDIUM / 20% LOW / 10% edge, matches ROADMAP spec exactly
-- [x] Encoded 6 rulebook JSON files under `rulebook/visa/` (13.1, 13.4, 12.6) and `rulebook/rupay/` (1061, 1062, 1002)
-  - Flagged for Day 3: real Visa CE 3.0 (2-of-4 rule) applies to dispute condition 10.4, not to our fallback canonical set — marked `ce3_eligible: false` on all for honesty, need a scope decision before building `lib/ce3/assemble.ts`
-  - Flagged: RuPay reason code docs have no official public NPCI PDF — sourced from community summaries, noted in `source_reference`
-- [x] Prisma schema migrated to live Supabase Postgres (`prisma migrate dev --name init`)
-- [x] `scripts/seed-db.ts` written and run — 50 disputes now in the DB
-- [x] `POST /api/disputes/ingest` — Zod-validated against real Razorpay webhook shape, upserts by `razorpayDisputeId`, network auto-detected from reason code shape (`lib/network.ts`)
-- [x] `GET /api/disputes` and `GET /api/disputes/[id]` — tested live via curl, including 404 case
-- [x] Added `tsx` as dev dependency for running TS scripts directly
+- [x] `lib/llm.ts` — Gemini wrapper (`gemini-2.5-flash`), JSON-only responses, markdown-fence stripping, Zod validation, filesystem cache in `.llm-cache/` (gitignored), exponential backoff on 429 (max 3 retries)
+- [x] `lib/rules/loader.ts` — loads + Zod-validates all rulebook JSON at runtime, deterministic lookup by network+code
+- [x] `lib/rules/classifier.ts` — LLM picks best canonical code from rulebook candidates; exact raw-code matches skip the LLM call entirely (fast path, saves quota)
+- [x] `lib/rules/extractor.ts` — typed claim extraction from evidence doc text, null-over-guess enforced via prompt + per-claim `present` boolean
+- [x] `lib/rules/exclusions.ts` — deterministic exclusion/reclassification checks, no LLM
+- [x] `lib/rules/scorer.ts` — deterministic evidence scoring against `all_required`/`any_one_of`
+- [x] `POST /api/decide/[disputeId]/analyze` — wires classify -> extract -> exclude -> score, tested live end-to-end against real Gemini calls (not mocked)
+
+**Bugs found and fixed during live testing (not just unit-level — caught by an actual API call):**
+- Scorer was double-counting the same claim_type when a rule's `all_required` was empty and `any_one_of` covered it — the fallback logic incorrectly reused `required_evidence` (an informational catalog) as a second gate. Fixed: `all_required`/`any_one_of` are now used as-is, `required_evidence` is never a fallback.
+- 5 of 6 rulebook exclusion rules had nonsensical `reclassify_to` targets (copied from CLAUDE.md's illustrative schema example without adapting the logic — e.g. "counterfeit-goods return accepted" incorrectly reclassified to "not received"). Fixed: all now point to a `closed_no_action` sentinel, which is semantically correct (refund/return already handled = case closed, not a different chargeback category).
 
 ---
 
-## Tomorrow (Day 2 — Mon 1 Sept)
+## Tomorrow (Day 3 — Tue 2 Sept)
 
-- [ ] `lib/llm.ts` — Gemini SDK wrapper (`gemini-2.5-flash`), JSON extraction + fence-stripping + Zod validation, filesystem cache in `.llm-cache/`, exponential backoff on 429
-- [ ] `lib/rules/classifier.ts` — LLM canonical reason-code classification against rulebook
-- [ ] `lib/rules/extractor.ts` — typed claim extraction from evidence docs, null-over-guess
-- [ ] `lib/rules/exclusions.ts` — deterministic exclusion/reclassification checks
-- [ ] `lib/rules/scorer.ts` — deterministic evidence scoring against `required_evidence`
-- [ ] `POST /api/decide/[disputeId]/analyze` — wire classify -> extract -> exclude -> score
+- [ ] `lib/rules/router.ts` — confidence router (HIGH/MEDIUM/LOW thresholds per code)
+- [ ] `lib/rebuttal/generate.ts` — LLM-drafted rebuttal, cited to source docs
+- [ ] `lib/ce3/assemble.ts` — CE 3.0 evidence assembly — **needs a scope decision first**: real CE3.0 applies to Visa dispute condition 10.4, not our fallback canonical set (13.1/13.4/12.6). Ask Piyush how to handle this before building it.
+- [ ] `lib/audit/chain.ts` — hash-chained audit log
+- [ ] Recommend-accept pathway with dollar math (arbitration fee vs disputed amount)
+- [ ] `POST /api/decide/[disputeId]/execute` — full pipeline, writes Decision + AuditEntry

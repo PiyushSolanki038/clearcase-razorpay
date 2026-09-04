@@ -17,7 +17,7 @@
   "exclusions": [
     {
       "condition": "refund_already_issued_for_duplicate",
-      "reclassify_to": "1061"
+      "reclassify_to": "closed_no_action"
     }
   ],
   "ce3_eligible": false,

@@ -14,12 +14,7 @@
     { "id": "proof_of_delivery", "description": "Any valid delivery confirmation" }
   ],
   "all_required": [],
-  "exclusions": [
-    {
-      "condition": "cardholder_signed_receipt_present",
-      "reclassify_to": "13.4"
-    }
-  ],
+  "exclusions": [],
   "ce3_eligible": false,
   "source_reference": "Visa Core Rules ID#0004544, updated 2026-01. Note: real CE3.0 (2-of-4 rule) applies to dispute condition 10.4 (first-party misuse/fraud), not 13.1 — flag for Day 3 CE3.0 assembler scope decision."
 }

@@ -20,7 +20,7 @@
   "exclusions": [
     {
       "condition": "cardholder_return_accepted_by_merchant",
-      "reclassify_to": "13.1"
+      "reclassify_to": "closed_no_action"
     }
   ],
   "ce3_eligible": false,
