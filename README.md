@@ -3,7 +3,7 @@
 
 ## Live Demo
 - App: https://clearcase-razorpay.vercel.app
-- Video: [ADD AFTER RECORDING]
+- Video: https://www.loom.com/share/a067c061f0d04ac1872fba4484f8c05d
 - Track: Razorpay AI Buildathon 2026 — Track 02 (AI Risk Manager)
 
 ## The Problem
