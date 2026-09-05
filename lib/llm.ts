@@ -101,11 +101,19 @@ export async function extractStructured<T>(
   schema: ZodType<T>
 ): Promise<T> {
   const hash = promptHash(prompt);
-  const cached = await readCache(hash);
+  const cached = await readCache(hash); // already safe: returns null on any read failure
+
   const raw = cached ?? (await callGeminiWithRetry(prompt));
 
+  // Filesystem caching is a dev-time quota convenience only. Vercel's serverless
+  // filesystem is read-only outside /tmp, so mkdir here throws in production —
+  // expected, not an error worth failing the request over. Skip caching silently.
   if (!cached) {
-    await writeCache(hash, raw);
+    try {
+      await writeCache(hash, raw);
+    } catch {
+      // cache miss in production is fine — caching was only for dev quota management
+    }
   }
 
   const stripped = stripMarkdownFences(raw);
