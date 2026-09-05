@@ -3,13 +3,15 @@
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CheckCircle2, XCircle, BadgeCheck } from "lucide-react";
+import { ArrowLeft, BadgeCheck } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { findRule } from "@/lib/rules/loader";
 import { formatMoney, formatDeadline } from "@/lib/format";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { DecisionPanel } from "@/components/clearcase/decision-panel";
+import { ExtractedEvidencePanel } from "@/components/clearcase/extracted-evidence-panel";
+import { AnalysisProvider } from "@/components/clearcase/analysis-context";
 import type { AuditEntryView } from "@/components/clearcase/confidence-trace-dialog";
 
 const URGENCY_STYLES: Record<string, string> = {
@@ -159,64 +161,36 @@ export default async function DisputeDetailPage({
           </CardContent>
         </Card>
 
-        {/* Center: extracted evidence */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm uppercase tracking-wide text-muted-foreground">
-              Extracted Evidence
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2.5">
-            {!claims || claims.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                Run analysis to extract claims from evidence.
-              </p>
-            ) : (
-              claims.map((c) => (
-                <div
-                  key={c.claim_type}
-                  className={`rounded-lg border p-3 ${c.present ? "border-green-200 bg-green-50/60" : "border-border bg-muted/40"}`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <span className="flex items-center gap-1.5 text-sm font-medium text-foreground">
-                      {c.present ? (
-                        <CheckCircle2 className="size-4 text-green-600 shrink-0" strokeWidth={2} />
-                      ) : (
-                        <XCircle className="size-4 text-muted-foreground shrink-0" strokeWidth={2} />
-                      )}
-                      {c.claim_type}
-                    </span>
-                    <span className="text-xs text-muted-foreground shrink-0 tabular-nums">
-                      {c.present ? `${Math.round(c.confidence * 100)}%` : "not found"}
-                    </span>
-                  </div>
-                  {c.source_span && (
-                    <p className="text-xs text-muted-foreground mt-1.5 italic pl-5.5 leading-relaxed">
-                      &quot;{c.source_span}&quot;
-                    </p>
-                  )}
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
+        <AnalysisProvider>
+          {/* Center: extracted evidence */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm uppercase tracking-wide text-muted-foreground">
+                Extracted Evidence
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ExtractedEvidencePanel claims={claims} />
+            </CardContent>
+          </Card>
 
-        {/* Right: decision panel */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm uppercase tracking-wide text-muted-foreground">
-              Decision
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DecisionPanel
-              disputeId={dispute.id}
-              ce3Eligible={rule?.ce3_eligible ?? false}
-              initialAuditEntries={auditEntries}
-              initialResult={initialResult}
-            />
-          </CardContent>
-        </Card>
+          {/* Right: decision panel */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm uppercase tracking-wide text-muted-foreground">
+                Decision
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DecisionPanel
+                disputeId={dispute.id}
+                ce3Eligible={rule?.ce3_eligible ?? false}
+                initialAuditEntries={auditEntries}
+                initialResult={initialResult}
+              />
+            </CardContent>
+          </Card>
+        </AnalysisProvider>
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ConfidenceTraceDialog, type AuditEntryView } from "./confidence-trace-dialog";
+import { useAnalysisLoading } from "./analysis-context";
 
 interface EvidenceDocInput {
   docType: string;
@@ -69,7 +70,7 @@ export function DecisionPanel({
     shippingAddress: "",
     ipAddress: "",
   });
-  const [loading, setLoading] = useState(false);
+  const { loading, setLoading } = useAnalysisLoading();
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<DecisionResult | null>(initialResult);
   const [auditEntries, setAuditEntries] = useState<AuditEntryView[]>(initialAuditEntries);
