@@ -5,7 +5,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, AlertTriangle, XCircle, Plus } from "lucide-react";
+import { CheckCircle2, AlertTriangle, XCircle, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -80,6 +80,10 @@ export function DecisionPanel({
     setDocs((prev) => prev.map((d, i) => (i === index ? { ...d, [field]: value } : d)));
   }
 
+  function removeDoc(index: number) {
+    setDocs((prev) => prev.filter((_, i) => i !== index));
+  }
+
   async function runAnalysis() {
     setLoading(true);
     setError(null);
@@ -134,7 +138,15 @@ export function DecisionPanel({
     <div className="space-y-4">
       <div className="space-y-3">
         {docs.map((doc, i) => (
-          <div key={i} className="space-y-1.5">
+          <div key={i} className="relative space-y-1.5 rounded-lg border border-border p-3">
+            <button
+              type="button"
+              aria-label="Remove document"
+              onClick={() => removeDoc(i)}
+              className="absolute top-2 right-2 rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            >
+              <X className="size-3.5" />
+            </button>
             <label className="text-xs font-medium text-muted-foreground">
               Document type
             </label>
@@ -142,6 +154,7 @@ export function DecisionPanel({
               placeholder="e.g. courier_pod, brand_certificate"
               value={doc.docType}
               onChange={(e) => updateDoc(i, "docType", e.target.value)}
+              className="pr-8"
             />
             <label className="text-xs font-medium text-muted-foreground">
               Evidence text
