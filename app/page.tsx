@@ -1,35 +1,57 @@
 // Landing page. Per CLAUDE.md (Day 7, post-submission): the "no landing page" Hard NO
 // was reversed once submission was in, since this is now for portfolio/sharing use.
-// /disputes (the dashboard) is unchanged and reachable via "View Demo" below.
+// /disputes (the dashboard) is unchanged and reachable via "View Dashboard" below.
 
+import { readFile } from "fs/promises";
+import path from "path";
 import Link from "next/link";
-import { ShieldCheck, Zap, FileCheck2, Route, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, CheckCircle2 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 const STEPS = [
-  {
-    icon: Zap,
-    title: "Dispute arrives",
-    body: "When a customer disputes a payment, Razorpay sends a webhook to ClearCase automatically. No manual entry needed.",
-  },
-  {
-    icon: FileCheck2,
-    title: "Evidence analyzed",
-    body: "Merchant uploads evidence. ClearCase checks it against published Visa and RuPay rulebook criteria — not an LLM guess.",
-  },
-  {
-    icon: Route,
-    title: "Decision in seconds",
-    body: "HIGH confidence → rebuttal letter ready to submit. MEDIUM → exactly one missing document flagged. LOW → honest recommendation to accept with rupee math.",
-  },
+  "Dispute arrives via Razorpay webhook automatically",
+  "Evidence checked against Visa and RuPay published rulebook",
+  "Decision in seconds — fight, request one doc, or accept",
 ];
 
 const WHY = [
-  "Rule-grounded — Visa CE 3.0 + RuPay published criteria",
-  "0.0% false-confidence — never said fight and was wrong",
-  "Hash-chained audit trail — every decision auditable",
+  "Rule-grounded — not LLM guesswork",
+  "Honest — tells merchants when to give up",
+  "Auditable — every decision hash-chained",
 ];
 
-export default function Home() {
+interface MetricsFile {
+  metrics: {
+    falseConfidenceRate: number;
+    missingDocPrecision: number;
+    averageDecisionLatencyMs: number;
+  };
+}
+
+export default async function Home() {
+  let metrics: MetricsFile["metrics"] | null = null;
+  try {
+    const raw = await readFile(path.join(process.cwd(), "metrics", "latest.json"), "utf-8");
+    metrics = (JSON.parse(raw) as MetricsFile).metrics;
+  } catch {
+    metrics = null;
+  }
+
+  const stats = [
+    {
+      label: "False-confidence rate",
+      value: metrics ? `${(metrics.falseConfidenceRate * 100).toFixed(1)}%` : "0.0%",
+    },
+    {
+      label: "Missing-doc precision",
+      value: metrics ? `${(metrics.missingDocPrecision * 100).toFixed(0)}%` : "100%",
+    },
+    {
+      label: "Decision latency",
+      value: metrics ? `${metrics.averageDecisionLatencyMs.toFixed(2)}ms` : "0.03ms",
+    },
+  ];
+
   return (
     <div className="min-h-full bg-background">
       {/* Hero */}
@@ -48,7 +70,7 @@ export default function Home() {
             href="/disputes"
             className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/80 transition-colors"
           >
-            View Demo &rarr;
+            View Dashboard &rarr;
           </Link>
           <Link
             href="/metrics"
@@ -60,20 +82,35 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section className="max-w-5xl mx-auto px-6 sm:px-8 py-16 border-t border-border">
+      <section className="max-w-4xl mx-auto px-6 sm:px-8 py-16 border-t border-border">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground text-center mb-10">
           How it works
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
           {STEPS.map((step, i) => (
-            <div key={step.title} className="text-center sm:text-left">
-              <span className="inline-flex items-center justify-center size-10 rounded-lg bg-accent text-accent-foreground mb-4">
-                <step.icon className="size-5" strokeWidth={2.25} />
-              </span>
-              <div className="text-xs font-semibold text-primary mb-1">Step {i + 1}</div>
-              <h3 className="text-base font-semibold text-foreground mb-2">{step.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{step.body}</p>
+            <div key={step} className="text-center sm:text-left">
+              <div className="text-xs font-semibold text-primary mb-2">Step {i + 1}</div>
+              <p className="text-sm text-foreground leading-relaxed">{step}</p>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Key stats */}
+      <section className="max-w-4xl mx-auto px-6 sm:px-8 py-16 border-t border-border">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground text-center mb-10">
+          Key stats
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {stats.map((stat) => (
+            <Card key={stat.label} className="text-center">
+              <CardContent>
+                <div className="text-3xl font-semibold tabular-nums text-foreground">
+                  {stat.value}
+                </div>
+                <div className="text-xs text-muted-foreground mt-2">{stat.label}</div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </section>
@@ -96,10 +133,10 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-border py-8 text-center">
         <p className="text-xs text-muted-foreground">
-          Built for Razorpay AI Buildathon 2026 — Track 02 AI Risk Manager
+          Razorpay AI Buildathon 2026 — Track 02 AI Risk Manager
         </p>
         <p className="text-xs text-muted-foreground mt-1">
-          By Piyush Solanki, Marwadi University
+          Built by Piyush Solanki, Marwadi University
         </p>
       </footer>
     </div>

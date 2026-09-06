@@ -161,7 +161,7 @@ Core tables:
 - ❌ Do not skip the metrics script. It IS the submission.
 - ❌ Do not skip the hash chain in AuditEntry.
 - ❌ Do not add animations, splash screens, or "polish" before core loop works end-to-end.
-- ~~❌ Do not build a landing page. The dashboard IS the landing page.~~ **Reversed Day 7 (post-submission, 6 Sept 2026)**: submission is already in, so this is now for portfolio/sharing purposes. `/` is a real landing page (hero, how-it-works, why-ClearCase, footer); `/disputes` is unchanged and still reachable via the landing page's "View Demo" button.
+- ~~❌ Do not build a landing page. The dashboard IS the landing page.~~ **Reversed Day 7 (post-submission, 6 Sept 2026)**: submission is already in, so this is now for portfolio/sharing purposes. `/` is a real landing page (hero, how-it-works, key stats, why-ClearCase, footer); `/disputes` is unchanged and still reachable via the landing page's "View Dashboard" button.
 
 ---
 
