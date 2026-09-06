@@ -1,8 +1,10 @@
 // Landing page. Per CLAUDE.md (Day 7, post-submission): the "no landing page" Hard NO
 // was reversed once submission was in, since this is now for portfolio/sharing use.
 // /disputes (the dashboard) is unchanged and reachable via "View Dashboard" below.
-// Day 7, take 4: full rewrite matching a GUVI-style reference — strict black/grey/white,
-// navbar + one hero + footer, no color accents at all.
+// Day 7, take 4: GUVI-style layout (navbar + one hero + footer). Take 5: accent color
+// switched from black to the dashboard's actual --primary token, so it's always
+// identical to /disputes and /metrics by definition rather than a separately
+// maintained hex value.
 
 import Link from "next/link";
 
@@ -34,7 +36,7 @@ export default function Home() {
           <div className="flex items-center gap-5">
             <Link
               href="/disputes"
-              className="inline-flex items-center rounded-md bg-[#111] px-4 py-2 text-sm font-semibold text-white hover:bg-black transition-colors"
+              className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/80 transition-colors"
             >
               Get started
             </Link>
@@ -53,7 +55,7 @@ export default function Home() {
             <span className="block text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[#111]">
               Dispute.
             </span>
-            <span className="block text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-[#B0B0B0]">
+            <span className="block text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-primary">
               Resolve. Win.
             </span>
           </h1>
@@ -65,13 +67,13 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mt-8">
             <Link
               href="/disputes"
-              className="inline-flex items-center gap-1.5 rounded-md bg-[#111] px-6 py-3 text-sm font-semibold text-white hover:bg-black transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/80 transition-colors"
             >
               View Dashboard &rarr;
             </Link>
             <Link
               href="/metrics"
-              className="inline-flex items-center gap-1.5 rounded-md border border-[#D0D0D0] px-6 py-3 text-sm font-semibold text-[#444] hover:bg-[#F0F0F0] transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-md border border-primary/30 px-6 py-3 text-sm font-semibold text-primary hover:bg-primary/5 transition-colors"
             >
               See Metrics &rarr;
             </Link>
@@ -88,7 +90,7 @@ export default function Home() {
         <div className="border-t lg:border-t-0 lg:border-l border-[#E5E5E5] px-6 sm:px-8 lg:px-12 py-16 flex flex-col justify-center gap-10">
           {STEPS.map((step) => (
             <div key={step.number} className="flex gap-4">
-              <span className="text-xs font-semibold text-[#888] tabular-nums pt-1">
+              <span className="text-xs font-semibold text-primary tabular-nums pt-1">
                 {step.number}
               </span>
               <div>
@@ -107,17 +109,17 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 sm:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-[#888]">ClearCase — Razorpay AI Buildathon 2026</p>
           <div className="flex items-center gap-4 text-xs text-[#888]">
-            <Link href="/disputes" className="hover:text-[#111] transition-colors">
+            <Link href="/disputes" className="hover:text-primary transition-colors">
               Dashboard &rarr;
             </Link>
-            <Link href="/metrics" className="hover:text-[#111] transition-colors">
+            <Link href="/metrics" className="hover:text-primary transition-colors">
               Metrics &rarr;
             </Link>
             <a
               href="https://github.com/PiyushSolanki038/clearcase-razorpay"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#111] transition-colors"
+              className="hover:text-primary transition-colors"
             >
               GitHub &rarr;
             </a>
