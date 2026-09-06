@@ -19,12 +19,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </span>
             </span>
           </Link>
-          <Link
-            href="/metrics"
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-          >
-            Metrics &rarr;
-          </Link>
+          <div className="flex items-center gap-5">
+            <Link
+              href="/"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              Home
+            </Link>
+            <Link
+              href="/metrics"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              Metrics &rarr;
+            </Link>
+          </div>
         </div>
       </header>
       <main className="flex-1 min-w-0">{children}</main>
