@@ -1,23 +1,38 @@
 // Landing page. Per CLAUDE.md (Day 7, post-submission): the "no landing page" Hard NO
 // was reversed once submission was in, since this is now for portfolio/sharing use.
 // /disputes (the dashboard) is unchanged and reachable via "View Dashboard" below.
+// Dark fintech redesign (Day 7, take 2) — hero/how-it-works/why sections run dark
+// (#0F172A / #1E293B) with a light key-stats section between them, matching a
+// Stripe/Razorpay-marketing register rather than the light dashboard shell.
 
 import { readFile } from "fs/promises";
 import path from "path";
 import Link from "next/link";
-import { ShieldCheck, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const STEPS = [
-  "Dispute arrives via Razorpay webhook automatically",
-  "Evidence checked against Visa and RuPay published rulebook",
-  "Decision in seconds — fight, request one doc, or accept",
+  {
+    number: "01",
+    title: "Dispute Arrives",
+    body: "Razorpay webhook delivers the dispute automatically. No manual entry.",
+  },
+  {
+    number: "02",
+    title: "Rules Applied",
+    body: "Published Visa CE 3.0 and RuPay criteria checked — not an LLM guess.",
+  },
+  {
+    number: "03",
+    title: "Decision Made",
+    body: "HIGH: fight. MEDIUM: one doc missing. LOW: accept and save money.",
+  },
 ];
 
 const WHY = [
-  "Rule-grounded — not LLM guesswork",
-  "Honest — tells merchants when to give up",
-  "Auditable — every decision hash-chained",
+  "Rule-grounded — Visa CE 3.0 + RuPay. The rulebook decides, not the model.",
+  "Honest — tells merchants when to accept. Rupee math included.",
+  "Auditable — every decision hash-chained and reproducible.",
 ];
 
 interface MetricsFile {
@@ -39,105 +54,147 @@ export default async function Home() {
 
   const stats = [
     {
-      label: "False-confidence rate",
       value: metrics ? `${(metrics.falseConfidenceRate * 100).toFixed(1)}%` : "0.0%",
+      label: "False-confidence rate",
+      target: "target <5% — met",
     },
     {
-      label: "Missing-doc precision",
       value: metrics ? `${(metrics.missingDocPrecision * 100).toFixed(0)}%` : "100%",
+      label: "Missing-doc precision",
+      target: "target >90% — met",
     },
     {
-      label: "Decision latency",
       value: metrics ? `${metrics.averageDecisionLatencyMs.toFixed(2)}ms` : "0.03ms",
+      label: "Decision latency",
+      target: "target <3000ms — met",
     },
   ];
 
   return (
-    <div className="min-h-full bg-background">
-      {/* Hero */}
-      <section className="max-w-4xl mx-auto px-6 sm:px-8 pt-20 pb-16 text-center">
-        <span className="inline-flex items-center justify-center size-12 rounded-xl bg-primary text-primary-foreground mb-6">
-          <ShieldCheck className="size-6" strokeWidth={2.25} />
-        </span>
-        <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-foreground">
-          ClearCase
-        </h1>
-        <p className="text-lg text-muted-foreground mt-4 max-w-xl mx-auto">
-          Chargeback rebuttal automation for Razorpay merchants
-        </p>
-        <div className="flex items-center justify-center gap-3 mt-8">
-          <Link
-            href="/disputes"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/80 transition-colors"
-          >
-            View Dashboard &rarr;
-          </Link>
-          <Link
-            href="/metrics"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-5 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
-          >
-            See Metrics &rarr;
-          </Link>
+    <div className="min-h-full">
+      {/* Hero — dark navy */}
+      <section className="bg-[#0F172A] px-6 sm:px-8 pt-20 pb-24 text-center">
+        <div className="max-w-3xl mx-auto">
+          <span className="inline-block rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-slate-300 mb-8">
+            Razorpay AI Buildathon 2026 — Track 02
+          </span>
+          <h1 className="text-5xl sm:text-6xl font-bold tracking-tight text-white">
+            ClearCase
+          </h1>
+          <p className="text-xl font-semibold text-blue-400 mt-4">
+            Stop losing chargebacks.
+          </p>
+          <p className="text-base text-slate-300 mt-4 max-w-xl mx-auto leading-relaxed">
+            Razorpay merchants lose disputes not because they&apos;re wrong — because
+            they send the wrong proof. ClearCase fixes that in seconds.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-9">
+            <Link
+              href="/disputes"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-500 transition-colors"
+            >
+              View Dashboard &rarr;
+            </Link>
+            <Link
+              href="/metrics"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/25 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors"
+            >
+              See Metrics &rarr;
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="max-w-4xl mx-auto px-6 sm:px-8 py-16 border-t border-border">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground text-center mb-10">
-          How it works
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-          {STEPS.map((step, i) => (
-            <div key={step} className="text-center sm:text-left">
-              <div className="text-xs font-semibold text-primary mb-2">Step {i + 1}</div>
-              <p className="text-sm text-foreground leading-relaxed">{step}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Key stats */}
-      <section className="max-w-4xl mx-auto px-6 sm:px-8 py-16 border-t border-border">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground text-center mb-10">
-          Key stats
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {stats.map((stat) => (
-            <Card key={stat.label} className="text-center">
-              <CardContent>
-                <div className="text-3xl font-semibold tabular-nums text-foreground">
-                  {stat.value}
+      {/* How it works — dark cards */}
+      <section className="bg-[#0F172A] px-6 sm:px-8 pb-24">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400 text-center mb-10">
+            How it works
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {STEPS.map((step) => (
+              <div
+                key={step.number}
+                className="rounded-xl bg-[#1E293B] border border-white/10 p-6"
+              >
+                <div className="text-2xl font-bold text-blue-400 mb-3 tabular-nums">
+                  {step.number}
                 </div>
-                <div className="text-xs text-muted-foreground mt-2">{stat.label}</div>
-              </CardContent>
-            </Card>
-          ))}
+                <h3 className="text-base font-semibold text-white mb-2">{step.title}</h3>
+                <p className="text-sm text-slate-300 leading-relaxed">{step.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Why ClearCase */}
-      <section className="max-w-3xl mx-auto px-6 sm:px-8 py-16 border-t border-border">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground text-center mb-8">
-          Why ClearCase
-        </h2>
-        <ul className="space-y-4">
-          {WHY.map((point) => (
-            <li key={point} className="flex items-start gap-3">
-              <CheckCircle2 className="size-5 text-primary shrink-0 mt-0.5" strokeWidth={2.25} />
-              <span className="text-sm text-foreground leading-relaxed">{point}</span>
-            </li>
-          ))}
-        </ul>
+      {/* Key stats — light section */}
+      <section className="bg-background px-6 sm:px-8 py-20 border-b border-border">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground text-center mb-10">
+            Key stats
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {stats.map((stat) => (
+              <Card key={stat.label} className="text-center">
+                <CardContent>
+                  <div className="text-4xl font-bold tabular-nums text-blue-600">
+                    {stat.value}
+                  </div>
+                  <div className="text-sm text-foreground mt-2 font-medium">{stat.label}</div>
+                  <div className="text-xs text-green-700 mt-1">{stat.target}</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border py-8 text-center">
-        <p className="text-xs text-muted-foreground">
-          Razorpay AI Buildathon 2026 — Track 02 AI Risk Manager
-        </p>
-        <p className="text-xs text-muted-foreground mt-1">
-          Built by Piyush Solanki, Marwadi University
-        </p>
+      {/* Why ClearCase — dark section */}
+      <section className="bg-[#0F172A] px-6 sm:px-8 py-24">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400 text-center mb-12">
+            Why ClearCase
+          </h2>
+          <ul className="space-y-8">
+            {WHY.map((point) => (
+              <li key={point} className="flex items-start gap-4">
+                <CheckCircle2 className="size-6 text-blue-400 shrink-0 mt-0.5" strokeWidth={2} />
+                <span className="text-lg text-white leading-relaxed">{point}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* Footer — dark */}
+      <footer className="bg-[#0F172A] border-t border-white/10 px-6 sm:px-8 py-10">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-center sm:text-left">
+            <p className="text-sm text-slate-300">
+              Razorpay AI Buildathon 2026 — Track 02 AI Risk Manager
+            </p>
+            <p className="text-sm text-slate-400 mt-1">
+              Built by Piyush Solanki, Marwadi University
+            </p>
+          </div>
+          <div className="flex items-center gap-5">
+            <a
+              href="https://github.com/PiyushSolanki038/clearcase-razorpay"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-300 hover:text-white transition-colors"
+            >
+              GitHub &rarr;
+            </a>
+            <Link
+              href="/disputes"
+              className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
+            >
+              Demo &rarr;
+            </Link>
+          </div>
+        </div>
       </footer>
     </div>
   );
